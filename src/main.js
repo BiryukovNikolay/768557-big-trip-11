@@ -318,7 +318,7 @@ render(tripDaysListElement, createTripDayTemplate(), 'beforeend');
 
 const tripDaysItemElement = document.querySelector(`.trip-days__item`);
 
-render(tripDaysItemElement, createTripEventsListTemplate(),);
+render(tripDaysItemElement, createTripEventsListTemplate());
 
 const tripEventListElement = document.querySelector(`.trip-events__list`);
 
