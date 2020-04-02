@@ -13,7 +13,8 @@ const createRouteAndPriceInformationTemplate = () => {
         Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
       </p>
     </section>`
-)};
+  );
+};
 
 const createMenuControlTemplate = () => {
   return (
@@ -21,7 +22,8 @@ const createMenuControlTemplate = () => {
        <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">Table</a>
        <a class="trip-tabs__btn" href="#">Stats</a>
      </nav>`
-)};
+  );
+};
 
 const createFilterTemplate = () => {
   return (
@@ -40,7 +42,8 @@ const createFilterTemplate = () => {
        </div>
          <button class="visually-hidden" type="submit">Accept filter</button>
      </form>`
-)};
+  );
+};
 
 const createSortTemplate = () => {
   return (
@@ -70,7 +73,8 @@ const createSortTemplate = () => {
          </div>
          <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
      </form>`
-)};
+  );
+};
 
 const createEventEditTemplate = () => {
   return (
@@ -233,14 +237,16 @@ const createEventEditTemplate = () => {
               </section>
             </section>
           </form>`
-)};
+  );
+};
 
 
 const createTripDaysListTemplate = () => {
   return (
     `<ul class="trip-days">
      </ul>`
-)};
+  );
+};
 
 const createTripDayTemplate = () => {
   return (
@@ -250,13 +256,15 @@ const createTripDayTemplate = () => {
          <time class="day__date" datetime="2019-03-18">MAR 18</time>
        </div>
      </li>`
-)};
+  );
+};
 
 const createTripEventsListTemplate = () => {
   return (
     `<ul class="trip-events__list">
     </ul>`
-)};
+  );
+};
 
 
 const createTripEventTemplate = () => {
@@ -295,9 +303,10 @@ const createTripEventTemplate = () => {
                     </button>
                   </div>
                 </li>`
-)};
+  );
+};
 
-const render = (container, template, place = 'beforeend') => {
+const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
 };
 
@@ -305,7 +314,7 @@ const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlElement = tripMainElement.querySelector(`.trip-main__trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-render(tripMainElement, createRouteAndPriceInformationTemplate(), 'afterbegin');
+render(tripMainElement, createRouteAndPriceInformationTemplate(), `afterbegin`);
 render(tripControlElement, createMenuControlTemplate());
 render(tripControlElement, createFilterTemplate());
 render(tripEventsElement, createSortTemplate());
@@ -314,7 +323,7 @@ render(tripEventsElement, createTripDaysListTemplate());
 
 const tripDaysListElement = document.querySelector(`.trip-days`);
 
-render(tripDaysListElement, createTripDayTemplate(), 'beforeend');
+render(tripDaysListElement, createTripDayTemplate());
 
 const tripDaysItemElement = document.querySelector(`.trip-days__item`);
 
@@ -323,5 +332,5 @@ render(tripDaysItemElement, createTripEventsListTemplate());
 const tripEventListElement = document.querySelector(`.trip-events__list`);
 
 for (let i = 0; i < EVENT_COUNT; i++) {
-  render(tripEventListElement, createTripEventTemplate(),);
+  render(tripEventListElement, createTripEventTemplate());
 }
