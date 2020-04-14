@@ -10,6 +10,8 @@ import {createFilterTemplate} from "./components/filter.js";
 import {createMenuControlTemplate} from "./components/menu-control.js";
 import {createRouteAndPriceInformationTemplate} from "./components/route-and-price-information.js";
 import {generateFilters} from "./mock/filter.js";
+import {generateEvents} from "./mock/trip-event.js";
+import {generateOffers} from "./mock/offer.js";
 
 
 const render = (container, template, place = `beforeend`) => {
@@ -24,10 +26,11 @@ render(tripMainElement, createRouteAndPriceInformationTemplate(), `afterbegin`);
 render(tripControlElement, createMenuControlTemplate());
 
 const filters = generateFilters();
+const events = generateEvents(EVENT_COUNT);
 render(tripControlElement, createFilterTemplate(filters));
 
 render(tripEventsElement, createSortTemplate());
-render(tripEventsElement, createEventEditTemplate());
+render(tripEventsElement, createEventEditTemplate(events[0], generateOffers()));
 render(tripEventsElement, createTripDaysListTemplate());
 
 const tripDaysListElement = document.querySelector(`.trip-days`);
@@ -40,6 +43,6 @@ render(tripDaysItemElement, createTripEventsListTemplate());
 
 const tripEventListElement = document.querySelector(`.trip-events__list`);
 
-for (let i = 0; i < EVENT_COUNT; i++) {
-  render(tripEventListElement, createTripEventTemplate());
+for (let i = 0; i < events.length; i++) {
+  render(tripEventListElement, createTripEventTemplate(events[i], generateOffers()));
 }
