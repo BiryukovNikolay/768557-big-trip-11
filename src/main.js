@@ -9,6 +9,7 @@ import {createSortTemplate} from "./components/sort.js";
 import {createFilterTemplate} from "./components/filter.js";
 import {createMenuControlTemplate} from "./components/menu-control.js";
 import {createRouteAndPriceInformationTemplate} from "./components/route-and-price-information.js";
+import {generateFilters} from "./mock/filter.js";
 
 
 const render = (container, template, place = `beforeend`) => {
@@ -21,7 +22,10 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 
 render(tripMainElement, createRouteAndPriceInformationTemplate(), `afterbegin`);
 render(tripControlElement, createMenuControlTemplate());
-render(tripControlElement, createFilterTemplate());
+
+const filters = generateFilters();
+render(tripControlElement, createFilterTemplate(filters));
+
 render(tripEventsElement, createSortTemplate());
 render(tripEventsElement, createEventEditTemplate());
 render(tripEventsElement, createTripDaysListTemplate());
