@@ -1,4 +1,4 @@
-
+import {formatTime, getFormatDuration} from "../util.js";
 const createOfferMarkup = (offers) => {
   const offerLists = [];
   offers.forEach((it) => {
@@ -34,18 +34,15 @@ const createOffersMarkup = (offers) => {
 
 export const createTripEventTemplate = (event, offers) => {
 
-  const {} = event;
-
-  const eventTipe = `taxi`;
+  const {eventTipe, dueDateStart, dueDateEnd, destination, priceValue} = event;
   const typeIconName = `${eventTipe}.png`;
-  const destination = `Amsterdam`;
-  const startTime = `10:30`;
-  const endTime = `11:00`;
-  const startDate = `2019-03-18`;
-  const endDate = `2019-03-18`;
-  const duration = `30M`;
-  const priceValue = `20`;
+  const startTime = formatTime(dueDateStart);
+  const endTime = formatTime(dueDateEnd);
+  const startDate = dueDateStart;
+  const endDate = dueDateEnd;
+  const duration = getFormatDuration(dueDateStart, dueDateEnd);
   const offersMarkup = createOffersMarkup(offers);
+
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -55,11 +52,11 @@ export const createTripEventTemplate = (event, offers) => {
         <h3 class="event__title">${eventTipe} to ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${startDate}T${startTime}">${startTime}</time>
+            <time class="event__start-time" datetime="${startDate}">${startTime}</time>
             &mdash;
-            <time class="event__end-time" datetime="${endDate}T${endTime}">${endTime}</time>
+            <time class="event__end-time" datetime="${endDate}">${endTime}</time>
           </p>
-          <p class="event__duration">${duration}</p>
+          <p class="event__duration">${duration.days ? `${duration.days}D` : ``} ${duration.hours ? `${duration.hours}H` : ``} ${duration.minutes ? `${duration.minutes}M` : ``} </p>
         </div>
         <p class="event__price">
           &euro;&nbsp;

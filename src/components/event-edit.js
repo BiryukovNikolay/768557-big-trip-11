@@ -1,4 +1,5 @@
-
+import {formatDate} from "../util.js";
+import {formatTime} from "../util.js";
 const createSectionOfferMarkup = (offers) => {
   const offerLists = [];
   offers.forEach((it, i) => {
@@ -15,12 +16,19 @@ const createSectionOfferMarkup = (offers) => {
         </div>`
     );
   });
-  return offerLists.join(`\n`); // выбираем для показа только два первых offerLists
+  return offerLists.join(`\n`);
 };
 
 export const createEventEditTemplate = (event, offers) => {
-  const {} = event;
+  const {description, photo} = event;
+
   const avalibleOffer = createSectionOfferMarkup(offers);
+
+  const dateStart = formatDate(new Date());
+  const timeStart = formatTime(new Date());
+  const dateEnd = formatDate(new Date());
+  const timeEnd = formatTime(new Date());
+  const photos = photo;
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
             <header class="event__header">
@@ -109,12 +117,12 @@ export const createEventEditTemplate = (event, offers) => {
                 <label class="visually-hidden" for="event-start-time-1">
                   From
                 </label>
-                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 00:00">
+                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart} ${timeStart}">
                 &mdash;
                 <label class="visually-hidden" for="event-end-time-1">
                   To
                 </label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 00:00">
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd} ${timeEnd}">
               </div>
 
               <div class="event__field-group  event__field-group--price">
@@ -139,15 +147,11 @@ export const createEventEditTemplate = (event, offers) => {
 
               <section class="event__section  event__section--destination">
                 <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+                <p class="event__destination-description">${description}</p>
 
                 <div class="event__photos-container">
                   <div class="event__photos-tape">
-                    <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-                    <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-                    <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-                    <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-                    <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+                    ${photos}
                   </div>
                 </div>
               </section>
