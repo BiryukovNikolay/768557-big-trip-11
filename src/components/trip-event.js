@@ -13,7 +13,7 @@ const createOfferMarkup = (offers) => {
         </li>`
     );
   });
-  return offerLists.slice(0, 2).join(`\n`); // выбираем для показа только два первых offerLists
+  return offerLists.slice(0, 3).join(`\n`); // выбираем для показа только 3 первых offerLists
 };
 
 

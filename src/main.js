@@ -37,21 +37,11 @@ render(tripEventsElement, createTripDaysListTemplate());
 
 const tripDaysListElement = document.querySelector(`.trip-days`);
 
-const days = getDays(events);
+const days = [...getDays(events)];
 const points = getPoints(days);
-console.log([...days]);
-console.log(points);
+
+console.log(points)
 
 for (let i = 0; i < points.size; i++) {
-  render(tripDaysListElement, createTripDayTemplate((i + 1), [...days][i]));
-}
-
-const tripDaysItemElement = document.querySelector(`.trip-days__item`);
-
-render(tripDaysItemElement, createTripEventsListTemplate());
-
-const tripEventListElement = document.querySelector(`.trip-events__list`);
-
-for (let i = 0; i < events.length; i++) {
-  render(tripEventListElement, createTripEventTemplate(events[i], generateOffers()));
+  render(tripDaysListElement, createTripDayTemplate((i + 1), days[i], [...points][i], events, generateOffers()));
 }
