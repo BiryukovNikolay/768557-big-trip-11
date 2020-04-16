@@ -1,7 +1,5 @@
-const EVENT_COUNT = 5;
+const EVENT_COUNT = 8;
 
-import {createTripEventTemplate} from "./components/trip-event.js";
-import {createTripEventsListTemplate} from "./components/trip-events-list.js";
 import {createTripDayTemplate} from "./components/trip-day.js";
 import {createTripDaysListTemplate} from "./components/trip-days-list.js";
 import {createEventEditTemplate} from "./components/event-edit.js";
@@ -14,7 +12,8 @@ import {generateEvents} from "./mock/trip-event.js";
 import {generateOffers} from "./mock/offer.js";
 import {getPoints, getDays} from "./mock/trip-day";
 
-
+const events = generateEvents(EVENT_COUNT);
+console.log(events);
 const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
 };
@@ -23,11 +22,11 @@ const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlElement = tripMainElement.querySelector(`.trip-main__trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-render(tripMainElement, createRouteAndPriceInformationTemplate(), `afterbegin`);
+render(tripMainElement, createRouteAndPriceInformationTemplate(events), `afterbegin`);
 render(tripControlElement, createMenuControlTemplate());
 
 const filters = generateFilters();
-const events = generateEvents(EVENT_COUNT);
+
 
 render(tripControlElement, createFilterTemplate(filters));
 
@@ -37,11 +36,9 @@ render(tripEventsElement, createTripDaysListTemplate());
 
 const tripDaysListElement = document.querySelector(`.trip-days`);
 
-const days = [...getDays(events)];
+const days = getDays(events);
 const points = getPoints(days);
 
-console.log(points)
-
-for (let i = 0; i < points.size; i++) {
-  render(tripDaysListElement, createTripDayTemplate((i + 1), days[i], [...points][i], events, generateOffers()));
+for (let i = 0; i < points.length; i++) {
+  render(tripDaysListElement, createTripDayTemplate((i + 1), days[i], points[i], events, generateOffers()));
 }

@@ -18,5 +18,5 @@ export const getPoints = (days) => {
         points.push(it.day);
       }
   );
-  return new Set(points);
+  return [...new Set(points)].sort();
 };
