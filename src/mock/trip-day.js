@@ -3,8 +3,8 @@ export const getDays = (eventList) => {
   eventList.forEach(
       function (it) {
         const date = {};
-        date.day = it.dueDateStart.getDate();
-        date.month = it.dueDateStart.getMonth();
+        date.day = it.dateStart.getDate();
+        date.month = it.dateStart.getMonth();
         pointsDays.push(date);
       }
   );
@@ -13,10 +13,27 @@ export const getDays = (eventList) => {
 
 export const getPoints = (days) => {
   const points = [];
-  days.forEach(
-      function (it) {
-        points.push(it.day);
-      }
+  days.forEach((it) => {
+    points.push(it.day);
+  }
   );
   return [...new Set(points)].sort();
+};
+
+const getEventsInPoint = (events, dateDate) => {
+  const event = events.filter((it) => {
+    return it.dateStart.getDate() === dateDate;
+  });
+  return event;
+};
+
+
+export const getComfortEvents = (events) => {
+  const days = getDays(events);
+  const points = getPoints(days);
+  const comfortEventsList = {};
+  points.forEach((it, i) => {
+    comfortEventsList[i + 1] = getEventsInPoint(events, it);
+  });
+  return comfortEventsList;
 };

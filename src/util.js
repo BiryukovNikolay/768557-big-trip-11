@@ -2,17 +2,17 @@ const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
 
-export const getFormatDuration = (dateStart, dateEnd) => {
+export const formatDuration = (dateStart, dateEnd) => {
   const timeStart = dateStart.getTime();
   const timeEnd = dateEnd.getTime();
   const hourDiff = Math.abs(timeEnd - timeStart);
   const minDiff = hourDiff / 60 / 1000;
-  const hDiff = hourDiff / 3600 / 1000;
+  const hDiff = hourDiff / 60 / 60 / 1000;
   const dDiff = hourDiff / 3600 / 1000 / 24;
   const humanReadable = {};
   humanReadable.days = Math.floor(dDiff);
   humanReadable.hours = Math.floor(hDiff - 24 * humanReadable.days);
-  humanReadable.minutes = Math.floor(minDiff - 60 * humanReadable.hours);
+  humanReadable.minutes = Math.floor((minDiff - 60 * (24 * humanReadable.days + humanReadable.hours)));
   return humanReadable;
 };
 

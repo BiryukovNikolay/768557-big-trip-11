@@ -1,21 +1,20 @@
-import {formatTime, getFormatDuration} from "../util.js";
+import {formatTime, formatDuration} from "../util.js";
+
 const createOfferMarkup = (offers) => {
   const offerLists = [];
   offers.forEach((it) => {
-    const offerTitle = it.title;
-    const offerPrice = it.price;
+    const {title, price} = it;
     offerLists.push(
         `<li class="event__offer">
-          <span class="event__offer-title">${offerTitle}</span>
+          <span class="event__offer-title">${title}</span>
            &plus;
            &euro;&nbsp;
-          <span class="event__offer-price">${offerPrice}</span>
+          <span class="event__offer-price">${price}</span>
         </li>`
     );
   });
   return offerLists.slice(0, 3).join(`\n`); // выбираем для показа только 3 первых offerLists
 };
-
 
 const createOffersMarkup = (offers) => {
   const offerMarkup = createOfferMarkup(offers);
@@ -32,16 +31,16 @@ const createOffersMarkup = (offers) => {
 };
 
 
-export const createTripEventTemplate = (event, offers) => {
+export const createTripEventTemplate = (event) => {
 
-  const {eventTipe, dueDateStart, dueDateEnd, destination, priceValue} = event;
-  const typeIconName = `${eventTipe}.png`;
-  const startTime = formatTime(dueDateStart);
-  const endTime = formatTime(dueDateEnd);
-  const startDate = dueDateStart;
-  const endDate = dueDateEnd;
-  const duration = getFormatDuration(dueDateStart, dueDateEnd);
-  const offersMarkup = createOffersMarkup(offers);
+  const {eventTipe, dateStart, dateEnd, destination, priceValue} = event;
+  const typeIconName = `${eventTipe.toLowerCase()}.png`;
+  const startTime = formatTime(dateStart);
+  const endTime = formatTime(dateEnd);
+  const startDate = dateStart;
+  const endDate = dateEnd;
+  const duration = formatDuration(dateStart, dateEnd);
+  const offersMarkup = createOffersMarkup(event.offers);
 
   return (
     `<li class="trip-events__item">

@@ -19,8 +19,8 @@ const createSectionOfferMarkup = (offers) => {
   return offerLists.join(`\n`);
 };
 
-export const createEventEditTemplate = (event, offers) => {
-  const {description, photo} = event;
+export const createEventEditTemplate = (events) => {
+  const {description, photo, offers} = events[1][0];
 
   const avalibleOffer = createSectionOfferMarkup(offers);
 

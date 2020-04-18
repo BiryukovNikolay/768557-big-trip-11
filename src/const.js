@@ -16,3 +16,27 @@ export const MONTH_NAMES = [
   `Nov`,
   `Dec`
 ];
+
+export const OFFER_NAMES = [
+  {
+    title: `add luggage`,
+    price: 30
+  },
+  {
+    title: `switch to comfort class`,
+    price: 100
+  },
+  {
+    title: `add meal`,
+    price: 15
+  },
+  {
+    title: `chouse seats`,
+    price: 5
+  },
+  {
+    title: `travel by train`,
+    price: 40
+  }
+];
+
