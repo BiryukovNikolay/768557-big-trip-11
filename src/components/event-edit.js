@@ -20,7 +20,8 @@ const createSectionOfferMarkup = (offers) => {
 };
 
 export const createEventEditTemplate = (events) => {
-  const {description, photo, offers} = events[1][0];
+
+  const {description, photo, offers} = events[0];
 
   const avalibleOffer = createSectionOfferMarkup(offers);
 

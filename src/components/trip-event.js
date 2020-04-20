@@ -1,19 +1,17 @@
 import {formatTime, formatDuration} from "../util.js";
 
 const createOfferMarkup = (offers) => {
-  const offerLists = [];
-  offers.forEach((it) => {
+  return offers.map((it) => {
     const {title, price} = it;
-    offerLists.push(
-        `<li class="event__offer">
-          <span class="event__offer-title">${title}</span>
+    return `<li class="event__offer">
+      <span class="event__offer-title">${title}</span>
            &plus;
            &euro;&nbsp;
           <span class="event__offer-price">${price}</span>
-        </li>`
-    );
-  });
-  return offerLists.slice(0, 3).join(`\n`); // выбираем для показа только 3 первых offerLists
+        </li>`;
+  })
+  .slice(0, 3)
+  .join(`\n`);
 };
 
 const createOffersMarkup = (offers) => {

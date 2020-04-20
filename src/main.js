@@ -1,4 +1,4 @@
-const EVENT_COUNT = 8;
+const EVENT_COUNT = 10;
 
 import {createTripDayTemplate} from "./components/trip-day.js";
 import {createTripDaysListTemplate} from "./components/trip-days-list.js";
@@ -9,10 +9,11 @@ import {createMenuControlTemplate} from "./components/menu-control.js";
 import {createRouteAndPriceInformationTemplate} from "./components/route-and-price-information.js";
 import {generateFilters} from "./mock/filter.js";
 import {generateEvents} from "./mock/trip-event.js";
-import {getComfortEvents} from "./mock/trip-day";
+import {getPoints} from "./mock/trip-day";
 
-const events = getComfortEvents(generateEvents(EVENT_COUNT));
-const points = Object.keys(events);
+const events = generateEvents(EVENT_COUNT);
+
+const points = getPoints(events);
 
 const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
