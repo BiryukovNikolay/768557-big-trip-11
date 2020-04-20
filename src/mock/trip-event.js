@@ -71,10 +71,7 @@ const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
     .map(generateEvent)
-    .sort((a, b) => {
-      return a.dateStart.getTime() - b.dateStart.getTime();
-    });
+    .sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime());
 };
-
 
 export {generateEvent, generateEvents};

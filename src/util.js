@@ -9,10 +9,12 @@ export const formatDuration = (dateStart, dateEnd) => {
   const minDiff = hourDiff / 60 / 1000;
   const hDiff = hourDiff / 60 / 60 / 1000;
   const dDiff = hourDiff / 3600 / 1000 / 24;
-  const humanReadable = {};
-  humanReadable.days = Math.floor(dDiff);
-  humanReadable.hours = Math.floor(hDiff - 24 * humanReadable.days);
-  humanReadable.minutes = Math.floor((minDiff - 60 * (24 * humanReadable.days + humanReadable.hours)));
+  const daysDuration = Math.floor(dDiff);
+  const humanReadable = {
+    days: daysDuration,
+    hours: Math.floor(hDiff - 24 * daysDuration),
+    minutes: Math.floor((minDiff - 60 * (24 * daysDuration + Math.floor(hDiff - 24 * daysDuration)))),
+  };
   return humanReadable;
 };
 
