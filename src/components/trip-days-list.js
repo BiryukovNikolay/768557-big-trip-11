@@ -6,20 +6,20 @@ const formatStartDate = (startDate) => {
 };
 
 const getDayEventsList = (events) => {
-  const DayEventList = {};
+  const DayEventList = new Map();
   events.forEach((it) => {
     const dataDay = formatStartDate(it.dateStart);
     const pointDay = dataDay.substr(0, 2);
     const pointMonth = MONTH_NAMES[Number(dataDay.substr(3, 2) - 1)];
     const dataName = `${pointDay} ${pointMonth}`;
-    if (DayEventList.hasOwnProperty(dataName)) {
-      DayEventList[dataName].push(it);
+    if (DayEventList.has(dataName)) {
+      DayEventList.get(dataName).push(it);
     } else {
-      DayEventList[dataName] = [];
-      DayEventList[dataName].push(it);
+      DayEventList.set(dataName, []);
+      DayEventList.get(dataName).push(it);
     }
   });
-  return new Map(Object.entries(DayEventList));
+  return DayEventList;
 };
 
 const createTripDays = (events) => {
