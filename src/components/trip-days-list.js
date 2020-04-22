@@ -1,28 +1,27 @@
 import {createTripDayTemplate} from "../components/trip-day.js";
-import {MONTH_NAMES} from "../const";
+
+const formatStartDate = (startDate) => {
+  const options = {month: `short`, day: `numeric`};
+  return new Intl.DateTimeFormat(`en-GB`, options).format(startDate);
+};
 
 const getDayEventsList = (events) => {
-  const DayEventList = new Map();
+  const dayEventList = new Map();
   events.forEach((it) => {
-    const dataDay = it.dateStart;
-    const pointDay = dataDay.getDate();
-    const pointMonth = MONTH_NAMES[dataDay.getMonth()];
-    const dateName = `${pointDay} ${pointMonth}`;
-    if (DayEventList.has(dateName)) {
-      DayEventList.get(dateName).push(it);
-    } else {
-      DayEventList.set(dateName, []);
-      DayEventList.get(dateName).push(it);
+    const dataDay = formatStartDate(it.dateStart);
+    if (!dayEventList.has(dataDay)) {
+      dayEventList.set(dataDay, []);
     }
+    dayEventList.get(dataDay).push(it);
   });
-  return DayEventList;
+  return dayEventList;
 };
 
 const createTripDays = (events) => {
   const tripDays = [];
   let pointCount = 1;
-  events.forEach((it, i) => {
-    tripDays.push(createTripDayTemplate(it, i, pointCount));
+  events.forEach((eventPoints, day) => {
+    tripDays.push(createTripDayTemplate(eventPoints, day, pointCount));
     pointCount++;
   });
   return tripDays.join(`\n`);
