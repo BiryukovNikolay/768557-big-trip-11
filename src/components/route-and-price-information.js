@@ -1,12 +1,31 @@
-export const createRouteAndPriceInformationTemplate = () => {
+import {MONTH_NAMES} from "../const";
+
+export const createRouteAndPriceInformationTemplate = (events) => {
+
+  const startDay = events[0];
+  const middleDay = events[Math.floor(events.length / 2)];
+  const lastDay = events[events.length - 1];
+
+  const startLocation = startDay.destination;
+  const middleLocation = middleDay.destination;
+  const lastLocation = lastDay.destination;
+
+  const startDate = startDay.dateStart.getDate();
+  const startMonth = MONTH_NAMES[startDay.dateStart.getMonth()];
+  const endDay = lastDay.dateStart.getDate();
+  const endMonth = MONTH_NAMES[lastDay.dateStart.getMonth()];
+
+  const fullPrice = events.reduce((acc, it) => acc + it.priceValue, 0);
+
+
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
-        <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
+        <h1 class="trip-info__title">${startLocation}&mdash;${events.length > 3 ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}</h1>
+        <p class="trip-info__dates">${startMonth} ${startDate}&nbsp;&mdash;&nbsp;${endMonth === startMonth ? `` : `${endMonth}`}${endDay}</p>
       </div>
       <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+        Total: &euro;&nbsp;<span class="trip-info__cost-value">${fullPrice}</span>
       </p>
     </section>`
   );
