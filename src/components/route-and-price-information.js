@@ -1,4 +1,5 @@
-import {MONTH_NAMES, createElement} from "../const";
+import {MONTH_NAMES} from "../const";
+import {createElement} from "../util.js";
 
 const createRouteAndPriceInformationTemplate = (events) => {
 

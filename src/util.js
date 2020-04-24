@@ -1,3 +1,26 @@
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
+export const formatStartDate = (startDate) => {
+  const options = {month: `short`, day: `numeric`};
+  return new Intl.DateTimeFormat(`en-GB`, options).format(startDate);
+};
+
+export const getDayEventsList = (events) => {
+
+  const dayEventList = new Map();
+  events.forEach((it) => {
+    const dataDay = formatStartDate(it.dateStart);
+    if (!dayEventList.has(dataDay)) {
+      dayEventList.set(dataDay, []);
+    }
+    dayEventList.get(dataDay).push(it);
+  });
+  return dayEventList;
+};
+
 const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
@@ -56,4 +79,15 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
 
   return newElement.firstChild;
+};
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
 };

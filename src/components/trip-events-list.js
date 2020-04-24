@@ -1,16 +1,8 @@
-import {createTripEventTemplate} from "../components/trip-event.js";
-import {createElement} from "../utils.js";
+import {createElement} from "../util.js";
 
-const createTripEventsListTemplate = (events) => {
-  const getEvents = () => {
-    return events.map((it) => {
-      return createTripEventTemplate(it);
-    })
-    .join(`\n`);
-  };
+const createTripEventsListTemplate = () => {
   return (
     `<ul class="trip-events__list">
-      ${getEvents()}
     </ul>`
   );
 };
@@ -23,7 +15,7 @@ export default class EventList {
   }
 
   getTemplate() {
-    return createTripEventsListTemplate(this._events);
+    return createTripEventsListTemplate();
   }
 
   getElement() {

@@ -19,9 +19,9 @@ const createSectionOfferMarkup = (offers) => {
   return offerLists.join(`\n`);
 };
 
-const createEventEditTemplate = (events) => {
+const createEventEditTemplate = (event) => {
 
-  const {description, photo, offers} = events[0];
+  const {description, photo, offers} = event;
 
   const avalibleOffer = createSectionOfferMarkup(offers);
 
@@ -31,7 +31,8 @@ const createEventEditTemplate = (events) => {
   const timeEnd = formatTime(new Date());
   const photos = photo;
   return (
-    `<form class="trip-events__item  event  event--edit" action="#" method="post">
+    `<div class="trip-form">
+      <form class="trip-events__item  event  event--edit" action="#" method="post">
             <header class="event__header">
               <div class="event__type-wrapper">
                 <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -157,7 +158,8 @@ const createEventEditTemplate = (events) => {
                 </div>
               </section>
             </section>
-          </form>`
+          </form>
+        </div>`
   );
 };
 
