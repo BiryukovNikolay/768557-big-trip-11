@@ -1,5 +1,5 @@
-import {formatDate} from "../util.js";
-import {formatTime} from "../util.js";
+import {formatDate, formatTime, createElement} from "../util.js";
+
 const createSectionOfferMarkup = (offers) => {
   const offerLists = [];
   offers.forEach((it, i) => {
@@ -19,7 +19,7 @@ const createSectionOfferMarkup = (offers) => {
   return offerLists.join(`\n`);
 };
 
-export const createEventEditTemplate = (events) => {
+const createEventEditTemplate = (events) => {
 
   const {description, photo, offers} = events[0];
 
@@ -160,3 +160,28 @@ export const createEventEditTemplate = (events) => {
           </form>`
   );
 };
+
+export default class EventEdit {
+  constructor(events) {
+    this._events = events;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

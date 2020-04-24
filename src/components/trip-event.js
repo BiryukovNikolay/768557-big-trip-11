@@ -1,4 +1,4 @@
-import {formatTime, formatDuration} from "../util.js";
+import {formatTime, formatDuration, createElement} from "../util.js";
 
 const createOfferMarkup = (offers) => {
   return offers.map((it) => {
@@ -29,7 +29,7 @@ const createOffersMarkup = (offers) => {
 };
 
 
-export const createTripEventTemplate = (event) => {
+const createTripEventTemplate = (event) => {
 
   const {eventTipe, dateStart, dateEnd, destination, priceValue} = event;
   const typeIconName = `${eventTipe.toLowerCase()}.png`;
@@ -38,6 +38,9 @@ export const createTripEventTemplate = (event) => {
   const startDate = dateStart;
   const endDate = dateEnd;
   const duration = formatDuration(dateStart, dateEnd);
+  const durationDays = duration.days ? `${duration.days}D` : ``;
+  const durationHours = duration.hours ? `${duration.hours}H` : ``;
+  const durationMinutes = duration.minutes ? `${duration.minutes}M` : ``;
   const offersMarkup = createOffersMarkup(event.offers);
 
   return (
@@ -53,7 +56,7 @@ export const createTripEventTemplate = (event) => {
             &mdash;
             <time class="event__end-time" datetime="${endDate}">${endTime}</time>
           </p>
-          <p class="event__duration">${duration.days ? `${duration.days}D` : ``} ${duration.hours ? `${duration.hours}H` : ``} ${duration.minutes ? `${duration.minutes}M` : ``} </p>
+          <p class="event__duration">${durationDays} ${durationHours} ${durationMinutes} </p>
         </div>
         <p class="event__price">
           &euro;&nbsp;
@@ -68,3 +71,27 @@ export const createTripEventTemplate = (event) => {
       </li>`
   );
 };
+
+export default class TripEvent {
+  constructor(event) {
+    this._event = event;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

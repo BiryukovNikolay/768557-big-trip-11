@@ -50,3 +50,10 @@ export const getRandomArrayItem = (array) => {
 
   return array[randomIndex];
 };
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};

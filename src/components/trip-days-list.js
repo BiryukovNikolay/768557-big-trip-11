@@ -1,4 +1,5 @@
 import {createTripDayTemplate} from "../components/trip-day.js";
+import {createElement} from "../utils.js";
 
 const formatStartDate = (startDate) => {
   const options = {month: `short`, day: `numeric`};
@@ -27,10 +28,35 @@ const createTripDays = (events) => {
   return tripDays.join(`\n`);
 };
 
-export const createTripDaysListTemplate = (events) => {
+const createTripDaysListTemplate = (events) => {
   return (
     `<ul class="trip-days">
       ${createTripDays(getDayEventsList(events))}
      </ul>`
   );
 };
+
+export default class DaysList {
+  constructor(events) {
+    this._events = events;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripDaysListTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
