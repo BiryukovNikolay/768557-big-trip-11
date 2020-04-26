@@ -25,9 +25,18 @@ const renderEvent = (eventListElement, event) => {
     eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
   };
 
+  const editFormToggle = () => {
+    eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  };
+
+  const onResetButton = (evt) => {
+    evt.preventDefault();
+    editFormToggle();
+  };
+
   const onEditFormSubmit = (evt) => {
     evt.preventDefault();
-    eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    editFormToggle();
   };
 
   const eventComponent = new TripEventComponent(event);
@@ -38,15 +47,15 @@ const renderEvent = (eventListElement, event) => {
   const eventEdit = eventEditComponent.getElement().querySelector(`.trip-events__item`);
   const reset = eventEditComponent.getElement().querySelector(`.event__reset-btn`);
   eventEdit.addEventListener(`submit`, onEditFormSubmit);
-  reset.addEventListener(`click`, onEditFormSubmit);
+  reset.addEventListener(`click`, onResetButton);
 
-  render(eventListElement, eventComponent.getElement(), RenderPosition.BEFOREEND);
+  render(eventListElement, eventComponent.getElement());
 };
 
 
 const renderDaysList = (tripEventsElement, eventsList) => {
-  render(tripEventsElement, new SortComponent().getElement(), RenderPosition.BEFOREEND);
-  render(tripEventsElement, new DaysListComponent().getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, new SortComponent().getElement());
+  render(tripEventsElement, new DaysListComponent().getElement());
 
   const daysListElement = tripEventsElement.querySelector(`.trip-days`);
   let pointCount = 1;
@@ -58,8 +67,8 @@ const renderDaysList = (tripEventsElement, eventsList) => {
       renderEvent(eventList, it);
     });
 
-    render(dayEventList, eventList, RenderPosition.BEFOREEND);
-    render(daysListElement, dayEventList, RenderPosition.BEFOREEND);
+    render(dayEventList, eventList);
+    render(daysListElement, dayEventList);
     pointCount++;
   });
 
@@ -71,7 +80,7 @@ const tripControlElement = tripMainElement.querySelector(`.trip-main__trip-contr
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 
-render(tripControlElement, new MenuControlComponent().getElement(), RenderPosition.BEFOREEND);
+render(tripControlElement, new MenuControlComponent().getElement());
 render(tripMainElement, new RouteAndPriceComponent(events).getElement(), RenderPosition.AFTERBEGIN);
-render(tripControlElement, new FilterComponent(filters).getElement(), RenderPosition.BEFOREEND);
+render(tripControlElement, new FilterComponent(filters).getElement());
 renderDaysList(tripEventsElement, dayEventsList);

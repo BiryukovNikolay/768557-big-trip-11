@@ -7,8 +7,6 @@ const createTripDaysListTemplate = () => {
   );
 };
 
-//  ${createTripDays(getDayEventsList(events))}
-
 export default class DaysList {
   constructor(events) {
     this._events = events;

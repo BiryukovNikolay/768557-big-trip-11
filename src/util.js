@@ -49,7 +49,7 @@ export const formatTime = (date) => {
 };
 
 export const formatDate = (date) => {
-  const month = date.getMonth();
+  const month = date.getMonth() + 1;
   const day = date.getDate();
   const year = `${date.getFullYear()}`;
 
@@ -81,7 +81,7 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export const render = (container, element, place) => {
+export const render = (container, element, place = RenderPosition.BEFOREEND) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);

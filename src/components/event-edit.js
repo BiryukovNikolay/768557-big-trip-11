@@ -21,15 +21,15 @@ const createSectionOfferMarkup = (offers) => {
 
 const createEventEditTemplate = (event) => {
 
-  const {description, photo, offers} = event;
-
+  const {description, photo, offers, destination, eventTipe, priceValue, dateStart, dateEnd} = event;
+  const typeIconName = `${eventTipe.toLowerCase()}.png`;
   const avalibleOffer = createSectionOfferMarkup(offers);
-
-  const dateStart = formatDate(new Date());
-  const timeStart = formatTime(new Date());
-  const dateEnd = formatDate(new Date());
-  const timeEnd = formatTime(new Date());
+  const dayStart = formatDate(dateStart);
+  const timeStart = formatTime(dateStart);
+  const dayEnd = formatDate(dateEnd);
+  const timeEnd = formatTime(dateEnd);
   const photos = photo;
+
   return (
     `<div class="trip-form">
       <form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -37,7 +37,7 @@ const createEventEditTemplate = (event) => {
               <div class="event__type-wrapper">
                 <label class="event__type  event__type-btn" for="event-type-toggle-1">
                   <span class="visually-hidden">Choose event type</span>
-                  <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+                  <img class="event__type-icon" width="17" height="17" src="img/icons/${typeIconName}" alt="Event type icon">
                 </label>
                 <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -104,9 +104,9 @@ const createEventEditTemplate = (event) => {
 
               <div class="event__field-group  event__field-group--destination">
                 <label class="event__label  event__type-output" for="event-destination-1">
-                  Flight to
+                  ${eventTipe} to
                 </label>
-                <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
+                <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
                 <datalist id="destination-list-1">
                   <option value="Amsterdam"></option>
                   <option value="Geneva"></option>
@@ -119,12 +119,12 @@ const createEventEditTemplate = (event) => {
                 <label class="visually-hidden" for="event-start-time-1">
                   From
                 </label>
-                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart} ${timeStart}">
+                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayStart} ${timeStart}">
                 &mdash;
                 <label class="visually-hidden" for="event-end-time-1">
                   To
                 </label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd} ${timeEnd}">
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayEnd} ${timeEnd}">
               </div>
 
               <div class="event__field-group  event__field-group--price">
@@ -132,7 +132,7 @@ const createEventEditTemplate = (event) => {
                   <span class="visually-hidden">Price</span>
                   &euro;
                 </label>
-                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${priceValue}">
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
