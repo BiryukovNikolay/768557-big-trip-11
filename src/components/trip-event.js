@@ -18,7 +18,8 @@ const createOffersMarkup = (offers) => {
   const offerMarkup = createOfferMarkup(offers);
   if (offers.length !== 0) {
     return (
-      `<ul class="event__selected-offers">
+      `<h4 class="visually-hidden">Offers:</h4>
+       <ul class="event__selected-offers">
          ${offerMarkup}
        </ul>
       `
@@ -62,7 +63,6 @@ const createTripEventTemplate = (event) => {
           &euro;&nbsp;
           <span class="event__price-value">${priceValue}</span>
         </p>
-        <h4 class="visually-hidden">Offers:</h4>
           ${offersMarkup}
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>

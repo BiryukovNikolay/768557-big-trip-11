@@ -1,6 +1,6 @@
 import {formatDate, formatTime, createElement} from "../util.js";
 
-const createSectionOfferMarkup = (offers) => {
+const createOfferMarkup = (offers) => {
   const offerLists = [];
   offers.forEach((it, i) => {
     const offerTitle = it.title;
@@ -19,11 +19,29 @@ const createSectionOfferMarkup = (offers) => {
   return offerLists.join(`\n`);
 };
 
+const createSectionOffersMarkup = (offers) => {
+  const offerMarkup = createOfferMarkup(offers);
+  if (offers.length !== 0) {
+    return (
+      `<section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${offerMarkup}
+        </div>
+      </section>
+      `
+    );
+  } else {
+    return ``;
+  }
+};
+
+
 const createEventEditTemplate = (event) => {
 
   const {description, photo, offers, destination, eventTipe, priceValue, dateStart, dateEnd} = event;
   const typeIconName = `${eventTipe.toLowerCase()}.png`;
-  const avalibleOffer = createSectionOfferMarkup(offers);
+  const avalibleOffer = createSectionOffersMarkup(offers);
   const dayStart = formatDate(dateStart);
   const timeStart = formatTime(dateStart);
   const dayEnd = formatDate(dateEnd);
@@ -139,14 +157,7 @@ const createEventEditTemplate = (event) => {
               <button class="event__reset-btn" type="reset">Cancel</button>
             </header>
             <section class="event__details">
-              <section class="event__section  event__section--offers">
-                <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-                <div class="event__available-offers">
-                  ${avalibleOffer}
-                </div>
-              </section>
-
+              ${avalibleOffer}
               <section class="event__section  event__section--destination">
                 <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                 <p class="event__destination-description">${description}</p>
