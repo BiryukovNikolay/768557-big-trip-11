@@ -16,7 +16,7 @@ const createOfferMarkup = (offers) => {
 
 const createOffersMarkup = (offers) => {
   const offerMarkup = createOfferMarkup(offers);
-  if (offers) {
+  if (offers.length !== 0) {
     return (
       `<ul class="event__selected-offers">
          ${offerMarkup}
