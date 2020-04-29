@@ -1,6 +1,6 @@
-import {formatDate} from "../util.js";
-import {formatTime} from "../util.js";
-const createSectionOfferMarkup = (offers) => {
+import {formatDate, formatTime, createElement} from "../util.js";
+
+const createOfferMarkup = (offers) => {
   const offerLists = [];
   offers.forEach((it, i) => {
     const offerTitle = it.title;
@@ -19,24 +19,43 @@ const createSectionOfferMarkup = (offers) => {
   return offerLists.join(`\n`);
 };
 
-export const createEventEditTemplate = (events) => {
+const createSectionOffersMarkup = (offers) => {
+  const offerMarkup = createOfferMarkup(offers);
+  if (offers.length !== 0) {
+    return (
+      `<section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${offerMarkup}
+        </div>
+      </section>
+      `
+    );
+  } else {
+    return ``;
+  }
+};
 
-  const {description, photo, offers} = events[0];
 
-  const avalibleOffer = createSectionOfferMarkup(offers);
+const createEventEditTemplate = (event) => {
 
-  const dateStart = formatDate(new Date());
-  const timeStart = formatTime(new Date());
-  const dateEnd = formatDate(new Date());
-  const timeEnd = formatTime(new Date());
+  const {description, photo, offers, destination, eventTipe, priceValue, dateStart, dateEnd} = event;
+  const typeIconName = `${eventTipe.toLowerCase()}.png`;
+  const avalibleOffer = createSectionOffersMarkup(offers);
+  const dayStart = formatDate(dateStart);
+  const timeStart = formatTime(dateStart);
+  const dayEnd = formatDate(dateEnd);
+  const timeEnd = formatTime(dateEnd);
   const photos = photo;
+
   return (
-    `<form class="trip-events__item  event  event--edit" action="#" method="post">
+    `<div class="trip-form">
+      <form class="trip-events__item  event  event--edit" action="#" method="post">
             <header class="event__header">
               <div class="event__type-wrapper">
                 <label class="event__type  event__type-btn" for="event-type-toggle-1">
                   <span class="visually-hidden">Choose event type</span>
-                  <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+                  <img class="event__type-icon" width="17" height="17" src="img/icons/${typeIconName}" alt="Event type icon">
                 </label>
                 <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -103,9 +122,9 @@ export const createEventEditTemplate = (events) => {
 
               <div class="event__field-group  event__field-group--destination">
                 <label class="event__label  event__type-output" for="event-destination-1">
-                  Flight to
+                  ${eventTipe} to
                 </label>
-                <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
+                <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
                 <datalist id="destination-list-1">
                   <option value="Amsterdam"></option>
                   <option value="Geneva"></option>
@@ -118,12 +137,12 @@ export const createEventEditTemplate = (events) => {
                 <label class="visually-hidden" for="event-start-time-1">
                   From
                 </label>
-                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart} ${timeStart}">
+                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayStart} ${timeStart}">
                 &mdash;
                 <label class="visually-hidden" for="event-end-time-1">
                   To
                 </label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd} ${timeEnd}">
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayEnd} ${timeEnd}">
               </div>
 
               <div class="event__field-group  event__field-group--price">
@@ -131,21 +150,14 @@ export const createEventEditTemplate = (events) => {
                   <span class="visually-hidden">Price</span>
                   &euro;
                 </label>
-                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${priceValue}">
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
               <button class="event__reset-btn" type="reset">Cancel</button>
             </header>
             <section class="event__details">
-              <section class="event__section  event__section--offers">
-                <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-                <div class="event__available-offers">
-                  ${avalibleOffer}
-                </div>
-              </section>
-
+              ${avalibleOffer}
               <section class="event__section  event__section--destination">
                 <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                 <p class="event__destination-description">${description}</p>
@@ -157,6 +169,32 @@ export const createEventEditTemplate = (events) => {
                 </div>
               </section>
             </section>
-          </form>`
+          </form>
+        </div>`
   );
 };
+
+export default class EventEdit {
+  constructor(events) {
+    this._events = events;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

@@ -1,3 +1,26 @@
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
+export const formatStartDate = (startDate) => {
+  const options = {month: `short`, day: `numeric`};
+  return new Intl.DateTimeFormat(`en-GB`, options).format(startDate);
+};
+
+export const getDayEventsList = (events) => {
+
+  const dayEventList = new Map();
+  events.forEach((it) => {
+    const dataDay = formatStartDate(it.dateStart);
+    if (!dayEventList.has(dataDay)) {
+      dayEventList.set(dataDay, []);
+    }
+    dayEventList.get(dataDay).push(it);
+  });
+  return dayEventList;
+};
+
 const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
@@ -26,7 +49,7 @@ export const formatTime = (date) => {
 };
 
 export const formatDate = (date) => {
-  const month = date.getMonth();
+  const month = date.getMonth() + 1;
   const day = date.getDate();
   const year = `${date.getFullYear()}`;
 
@@ -49,4 +72,22 @@ export const getRandomArrayItem = (array) => {
   const randomIndex = getRandomInteger(0, (array.length - 1));
 
   return array[randomIndex];
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
+export const render = (container, element, place = RenderPosition.BEFOREEND) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
 };

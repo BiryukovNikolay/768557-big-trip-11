@@ -1,6 +1,7 @@
 import {MONTH_NAMES} from "../const";
+import {createElement} from "../util.js";
 
-export const createRouteAndPriceInformationTemplate = (events) => {
+const createRouteAndPriceInformationTemplate = (events) => {
 
   const startDay = events[0];
   const middleDay = events[Math.floor(events.length / 2)];
@@ -30,3 +31,28 @@ export const createRouteAndPriceInformationTemplate = (events) => {
     </section>`
   );
 };
+
+export default class RouteAndPrice {
+  constructor(events) {
+    this._events = events;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createRouteAndPriceInformationTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
