@@ -72,8 +72,6 @@ const renderEvent = (eventListElement, event) => {
 
 
 const renderDaysList = (tripEventsElement, eventsList) => {
-  console.log(new NoEventsComponent().getElement());
-  console.log(eventsList.size === 0);
   if (eventsList.size === 0) {
     render(tripEventsElement, new NoEventsComponent().getElement());
     return;
