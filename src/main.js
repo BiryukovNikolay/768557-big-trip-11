@@ -1,4 +1,4 @@
-const EVENT_COUNT = 10;
+const EVENT_COUNT = 0;
 
 import TripEventComponent from "./components/trip-event";
 import EventListComponent from "./components/trip-events-list.js";
@@ -9,6 +9,7 @@ import SortComponent from "./components/sort.js";
 import FilterComponent from "./components/filter.js";
 import MenuControlComponent from "./components/menu-control.js";
 import RouteAndPriceComponent from "./components/route-and-price-information.js";
+import NoEventsComponent from "./components/no-event.js";
 import {generateEvents} from "./mock/trip-event.js";
 import {generateFilters} from "./mock/filter.js";
 import {render, RenderPosition, getDayEventsList} from "./util.js";
@@ -71,6 +72,13 @@ const renderEvent = (eventListElement, event) => {
 
 
 const renderDaysList = (tripEventsElement, eventsList) => {
+  console.log(new NoEventsComponent().getElement());
+  console.log(eventsList.size === 0);
+  if (eventsList.size === 0) {
+    render(tripEventsElement, new NoEventsComponent().getElement());
+    return;
+  }
+
   render(tripEventsElement, new SortComponent().getElement());
   render(tripEventsElement, new DaysListComponent().getElement());
 
