@@ -6,6 +6,8 @@ import EventEditComponent from "../components/event-edit.js";
 import SortComponent from "../components/sort.js";
 import NoEventsComponent from "../components/no-event.js";
 import {render, replace} from "../utils/render.js";
+import {getDayEventsList, duration} from "../utils/date.js";
+import {SortType} from "../components/sort.js";
 
 const renderEvent = (eventListElement, event) => {
 
@@ -54,6 +56,24 @@ const renderEvent = (eventListElement, event) => {
   render(eventListElement, eventComponent);
 };
 
+const getSortedEvents = (events, sortType) => {
+  let sortedTasks = [];
+  const showingTasks = events.slice();
+
+  switch (sortType) {
+    case SortType.PRICE_UP:
+      sortedTasks = showingTasks.sort((a, b) => b.priceValue - a.priceValue);
+      break;
+    case SortType.DURATION_UP:
+      sortedTasks = showingTasks.sort((a, b) => duration(b.dateStart, b.dateEnd) - duration(a.dateStart, a.dateEnd));
+      break;
+    case SortType.DEFAULT:
+      sortedTasks = showingTasks;
+      break;
+  }
+  return sortedTasks;
+};
+
 export default class DaysListController {
   constructor(container) {
     this._container = container;
@@ -64,7 +84,7 @@ export default class DaysListController {
   }
 
   render(events) {
-    if (events.size === 0) {
+    if (events.lenght === 0) {
       render(this._container, this._noEventsComponent);
       return;
     }
@@ -73,18 +93,42 @@ export default class DaysListController {
     render(this._container, this._daysList);
 
     const daysListElement = this._container.querySelector(`.trip-days`);
-    let pointCount = 1;
-    events.forEach((eventPoint, day) => {
-      const dayEventList = new TripDayComponent(day, pointCount);
-      const eventList = new EventListComponent();
 
-      eventPoint.forEach((it) => {
+    const defaultDaylist = (eventsList) => {
+      const dayEventsList = getDayEventsList(eventsList);
+      let pointCount = 1;
+      dayEventsList.forEach((eventPoint, day) => {
+        const dayEventList = new TripDayComponent(day, pointCount);
+        const eventList = new EventListComponent();
+
+        eventPoint.forEach((it) => {
+          renderEvent(eventList.getElement(), it);
+        });
+
+        render(dayEventList.getElement(), eventList);
+        render(daysListElement, dayEventList);
+        pointCount++;
+      });
+    };
+
+    defaultDaylist(events);
+
+    this._sortComponent.setSortTypeChangeHandler((type) => {
+      if (type === SortType.DEFAULT) {
+        this._daysList.getElement().innerHTML = ``;
+        defaultDaylist(events);
+        return;
+      }
+
+      const sortEvents = getSortedEvents(events, type);
+      this._daysList.getElement().innerHTML = ``;
+      const dayEventList = new TripDayComponent(``, ``);
+      const eventList = new EventListComponent();
+      render(this._daysList.getElement(), dayEventList);
+      render(dayEventList.getElement(), eventList);
+      sortEvents.forEach((it) => {
         renderEvent(eventList.getElement(), it);
       });
-
-      render(dayEventList.getElement(), eventList);
-      render(daysListElement, dayEventList);
-      pointCount++;
     });
   }
 }

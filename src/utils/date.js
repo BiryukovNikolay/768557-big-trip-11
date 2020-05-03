@@ -20,10 +20,14 @@ const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
 
-export const formatDuration = (dateStart, dateEnd) => {
+export const duration = (dateStart, dateEnd) => {
   const timeStart = dateStart.getTime();
   const timeEnd = dateEnd.getTime();
-  const hourDiff = Math.abs(timeEnd - timeStart);
+  return Math.abs(timeEnd - timeStart);
+};
+
+export const formatDuration = (dateStart, dateEnd) => {
+  const hourDiff = duration(dateStart, dateEnd);
   const minDiff = hourDiff / 60 / 1000;
   const hDiff = hourDiff / 60 / 60 / 1000;
   const dDiff = hourDiff / 3600 / 1000 / 24;

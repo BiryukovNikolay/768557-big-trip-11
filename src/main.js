@@ -6,11 +6,9 @@ import RouteAndPriceComponent from "./components/route-and-price-information.js"
 import DaysListController from "./controllers/trip-days-list.js";
 import {generateEvents} from "./mock/trip-event.js";
 import {generateFilters} from "./mock/filter.js";
-import {getDayEventsList} from "./utils/date.js";
 import {render, RenderPosition} from "./utils/render.js";
 
 const events = generateEvents(EVENT_COUNT);
-const dayEventsList = getDayEventsList(events);
 
 const filters = generateFilters();
 
@@ -23,4 +21,4 @@ render(tripControlElement, new MenuControlComponent());
 render(tripMainElement, new RouteAndPriceComponent(events), RenderPosition.AFTERBEGIN);
 render(tripControlElement, new FilterComponent(filters));
 const daysListController = new DaysListController(tripEventsElement);
-daysListController.render(dayEventsList);
+daysListController.render(events);
