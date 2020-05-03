@@ -84,7 +84,7 @@ export default class DaysListController {
   }
 
   render(events) {
-    if (events.lenght === 0) {
+    if (events.length === 0) {
       render(this._container, this._noEventsComponent);
       return;
     }
