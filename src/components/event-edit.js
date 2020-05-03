@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {formatDate, formatTime} from "../util.js";
+import {formatDate, formatTime} from "../utils/date.js";
 
 const createOfferMarkup = (offers) => {
   const offerLists = [];
@@ -184,5 +184,13 @@ export default class EventEdit extends AbstractComponent {
 
   getTemplate() {
     return createEventEditTemplate(this._events);
+  }
+
+  setSubmitHandler(handler) {
+    this.getElement().querySelector(`.trip-events__item`).addEventListener(`submit`, handler);
+  }
+
+  setResetHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
   }
 }

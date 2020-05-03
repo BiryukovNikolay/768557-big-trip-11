@@ -1,4 +1,4 @@
-import {formatTime, formatDuration} from "../util.js";
+import {formatTime, formatDuration} from "../utils/date.js";
 import AbstractComponent from "./abstract-component.js";
 
 const createOfferMarkup = (offers) => {
@@ -81,5 +81,9 @@ export default class TripEvent extends AbstractComponent {
 
   getTemplate() {
     return createTripEventTemplate(this._event);
+  }
+
+  setRollupHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 }
