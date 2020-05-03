@@ -1,4 +1,4 @@
-const EVENT_COUNT = 0;
+const EVENT_COUNT = 20;
 
 import TripEventComponent from "./components/trip-event";
 import EventListComponent from "./components/trip-events-list.js";
@@ -12,7 +12,8 @@ import RouteAndPriceComponent from "./components/route-and-price-information.js"
 import NoEventsComponent from "./components/no-event.js";
 import {generateEvents} from "./mock/trip-event.js";
 import {generateFilters} from "./mock/filter.js";
-import {render, RenderPosition, getDayEventsList} from "./util.js";
+import {getDayEventsList} from "./util.js";
+import {render, replace, RenderPosition} from "./utils/render.js";
 
 const events = generateEvents(EVENT_COUNT);
 const dayEventsList = getDayEventsList(events);
@@ -23,11 +24,11 @@ const filters = generateFilters();
 const renderEvent = (eventListElement, event) => {
 
   const replaceEventToEdit = () => {
-    eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+    replace(eventListElement, eventEditComponent.getElement(), eventComponent.getElement());
   };
 
   const replaceEditToEvent = () => {
-    eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    replace(eventListElement, eventComponent.getElement(), eventEditComponent.getElement());
   };
 
   const onEscKeyDown = (evt) => {
@@ -67,30 +68,30 @@ const renderEvent = (eventListElement, event) => {
   eventEdit.addEventListener(`submit`, onEditFormSubmit);
   reset.addEventListener(`click`, onResetButton);
 
-  render(eventListElement, eventComponent.getElement());
+  render(eventListElement, eventComponent);
 };
 
 
 const renderDaysList = (tripEventsElement, eventsList) => {
   if (eventsList.size === 0) {
-    render(tripEventsElement, new NoEventsComponent().getElement());
+    render(tripEventsElement, new NoEventsComponent());
     return;
   }
 
-  render(tripEventsElement, new SortComponent().getElement());
-  render(tripEventsElement, new DaysListComponent().getElement());
+  render(tripEventsElement, new SortComponent());
+  render(tripEventsElement, new DaysListComponent());
 
   const daysListElement = tripEventsElement.querySelector(`.trip-days`);
   let pointCount = 1;
   eventsList.forEach((eventPoint, day) => {
-    const dayEventList = new TripDayComponent(day, pointCount).getElement();
-    const eventList = new EventListComponent().getElement();
+    const dayEventList = new TripDayComponent(day, pointCount);
+    const eventList = new EventListComponent();
 
     eventPoint.forEach((it) => {
-      renderEvent(eventList, it);
+      renderEvent(eventList.getElement(), it);
     });
 
-    render(dayEventList, eventList);
+    render(dayEventList.getElement(), eventList);
     render(daysListElement, dayEventList);
     pointCount++;
   });
@@ -103,7 +104,7 @@ const tripControlElement = tripMainElement.querySelector(`.trip-main__trip-contr
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 
-render(tripControlElement, new MenuControlComponent().getElement());
-render(tripMainElement, new RouteAndPriceComponent(events).getElement(), RenderPosition.AFTERBEGIN);
-render(tripControlElement, new FilterComponent(filters).getElement());
+render(tripControlElement, new MenuControlComponent());
+render(tripMainElement, new RouteAndPriceComponent(events), RenderPosition.AFTERBEGIN);
+render(tripControlElement, new FilterComponent(filters));
 renderDaysList(tripEventsElement, dayEventsList);
