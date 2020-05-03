@@ -1,4 +1,5 @@
-import {formatDate, formatTime, createElement} from "../util.js";
+import AbstractComponent from "./abstract-component.js";
+import {formatDate, formatTime} from "../utils/date.js";
 
 const createOfferMarkup = (offers) => {
   const offerLists = [];
@@ -174,27 +175,22 @@ const createEventEditTemplate = (event) => {
   );
 };
 
-export default class EventEdit {
+export default class EventEdit extends AbstractComponent {
   constructor(events) {
-    this._events = events;
+    super();
 
-    this._element = null;
+    this._events = events;
   }
 
   getTemplate() {
     return createEventEditTemplate(this._events);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setSubmitHandler(handler) {
+    this.getElement().querySelector(`.trip-events__item`).addEventListener(`submit`, handler);
   }
 
-  removeElement() {
-    this._element = null;
+  setResetHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
   }
 }
-

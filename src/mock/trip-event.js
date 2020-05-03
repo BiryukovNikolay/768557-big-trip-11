@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomArrayItem} from "../util.js";
+import {getRandomInteger, getRandomArrayItem} from "../utils/random.js";
 import {EVENT_TYPES, DESTINATION, OFFER_NAMES} from "../const";
 
 const DescriptionItem = [

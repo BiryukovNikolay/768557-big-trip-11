@@ -1,5 +1,5 @@
 import {MONTH_NAMES} from "../const";
-import {createElement} from "../util.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createRouteAndPriceInformationTemplate = (events) => {
   let route = ``;
@@ -38,27 +38,13 @@ const createRouteAndPriceInformationTemplate = (events) => {
   );
 };
 
-export default class RouteAndPrice {
+export default class RouteAndPrice extends AbstractComponent {
   constructor(events) {
+    super();
     this._events = events;
-
-    this._element = null;
   }
 
   getTemplate() {
     return createRouteAndPriceInformationTemplate(this._events);
   }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
 }
-

@@ -1,8 +1,3 @@
-export const RenderPosition = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
-};
-
 export const formatStartDate = (startDate) => {
   const options = {month: `short`, day: `numeric`};
   return new Intl.DateTimeFormat(`en-GB`, options).format(startDate);
@@ -25,10 +20,14 @@ const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
 
-export const formatDuration = (dateStart, dateEnd) => {
+export const duration = (dateStart, dateEnd) => {
   const timeStart = dateStart.getTime();
   const timeEnd = dateEnd.getTime();
-  const hourDiff = Math.abs(timeEnd - timeStart);
+  return Math.abs(timeEnd - timeStart);
+};
+
+export const formatDuration = (dateStart, dateEnd) => {
+  const hourDiff = duration(dateStart, dateEnd);
   const minDiff = hourDiff / 60 / 1000;
   const hDiff = hourDiff / 60 / 60 / 1000;
   const dDiff = hourDiff / 3600 / 1000 / 24;
@@ -54,40 +53,4 @@ export const formatDate = (date) => {
   const year = `${date.getFullYear()}`;
 
   return `${day}/0${month}/${year.substring(2, 4)}`;
-};
-
-export const formatDayMonth = (date, mounthNames) => {
-  const month = date.getMonth();
-  const day = date.getDate();
-
-  return `${day} ${mounthNames[month]}`;
-};
-
-export const getRandomInteger = (min, max) => {
-  let rand = min - 0.5 + Math.random() * (max - min + 1);
-  return Math.round(rand);
-};
-
-export const getRandomArrayItem = (array) => {
-  const randomIndex = getRandomInteger(0, (array.length - 1));
-
-  return array[randomIndex];
-};
-
-export const createElement = (template) => {
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
-};
-
-export const render = (container, element, place = RenderPosition.BEFOREEND) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-  }
 };

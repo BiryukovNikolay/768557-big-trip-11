@@ -1,4 +1,5 @@
-import {formatTime, formatDuration, createElement} from "../util.js";
+import {formatTime, formatDuration} from "../utils/date.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createOfferMarkup = (offers) => {
   return offers.map((it) => {
@@ -72,26 +73,17 @@ const createTripEventTemplate = (event) => {
   );
 };
 
-export default class TripEvent {
+export default class TripEvent extends AbstractComponent {
   constructor(event) {
+    super();
     this._event = event;
-
-    this._element = null;
   }
 
   getTemplate() {
     return createTripEventTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setRollupHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 }
