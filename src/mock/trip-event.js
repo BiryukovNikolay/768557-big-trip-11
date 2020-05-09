@@ -63,7 +63,8 @@ const generateEvent = () => {
     dateStart: getRandomDate(new Date(), false),
     dateEnd: getRandomDate(new Date(), true),
     photo: getRundomNumberOfPhotos(1, 5),
-    offers: generateOffers(OFFER_NAMES)
+    offers: generateOffers(OFFER_NAMES),
+    favorite: false
   };
 };
 
@@ -74,4 +75,4 @@ const generateEvents = (count) => {
     .sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime());
 };
 
-export {generateEvent, generateEvents};
+export {generateEvents};

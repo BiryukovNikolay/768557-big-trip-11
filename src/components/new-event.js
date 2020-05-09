@@ -1,4 +1,4 @@
-import AbstractSmartComponent from "./abstract-smart-component.js";
+import AbstractComponent from "./abstract-component.js";
 import {formatDate, formatTime} from "../utils/date.js";
 
 const createOfferMarkup = (offers) => {
@@ -24,13 +24,11 @@ const createSectionOffersMarkup = (offers) => {
   const offerMarkup = createOfferMarkup(offers);
   if (offers.length !== 0) {
     return (
-      `<section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          <div class="event__available-offers">
-            ${offerMarkup}
-          </div>
-        </section>
+      `<section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${offerMarkup}
+        </div>
       </section>
       `
     );
@@ -40,22 +38,21 @@ const createSectionOffersMarkup = (offers) => {
 };
 
 
-const createEventEditTemplate = (event, options = {}) => {
+const createEventEditTemplate = (event) => {
 
-  const {offers, destination, priceValue, dateStart, dateEnd} = event;
-  const {favorite, eventType} = options;
-  const typeIconName = `${eventType.toLowerCase()}.png`;
+  const {description, photo, offers, destination, eventTipe, priceValue, dateStart, dateEnd} = event;
+  const typeIconName = `${eventTipe.toLowerCase()}.png`;
   const avalibleOffer = createSectionOffersMarkup(offers);
   const dayStart = formatDate(dateStart);
   const timeStart = formatTime(dateStart);
   const dayEnd = formatDate(dateEnd);
   const timeEnd = formatTime(dateEnd);
-  const isFavorite = favorite ? `checked` : ``;
+  const photos = photo;
 
   return (
-    `<li class="trip-events__item trip-form">
-      <form class="event trip-events__item  event  event--edit" action="#" method="post">
-          <header class="event__header">
+    `<div class="trip-form">
+      <form class="trip-events__item  event  event--edit" action="#" method="post">
+            <header class="event__header">
               <div class="event__type-wrapper">
                 <label class="event__type  event__type-btn" for="event-type-toggle-1">
                   <span class="visually-hidden">Choose event type</span>
@@ -126,13 +123,14 @@ const createEventEditTemplate = (event, options = {}) => {
 
               <div class="event__field-group  event__field-group--destination">
                 <label class="event__label  event__type-output" for="event-destination-1">
-                  ${eventType}
+                  ${eventTipe} to
                 </label>
                 <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
                 <datalist id="destination-list-1">
                   <option value="Amsterdam"></option>
                   <option value="Geneva"></option>
                   <option value="Chamonix"></option>
+                  <option value="Saint Petersburg"></option>
                 </datalist>
               </div>
 
@@ -157,80 +155,42 @@ const createEventEditTemplate = (event, options = {}) => {
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-              <button class="event__reset-btn" type="reset">Delete</button>
-
-              <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite}>
-              <label class="event__favorite-btn" for="event-favorite-1">
-                <span class="visually-hidden">Add to favorite</span>
-                <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-                  <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-                </svg>
-              </label>
-
-              <button class="event__rollup-btn" type="button">
-                <span class="visually-hidden">Open event</span>
-              </button>
+              <button class="event__reset-btn" type="reset">Cancel</button>
             </header>
+            <section class="event__details">
               ${avalibleOffer}
+              <section class="event__section  event__section--destination">
+                <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+                <p class="event__destination-description">${description}</p>
+
+                <div class="event__photos-container">
+                  <div class="event__photos-tape">
+                    ${photos}
+                  </div>
+                </div>
+              </section>
+            </section>
           </form>
-        </li>`
+        </div>`
   );
 };
 
-export default class EventEdit extends AbstractSmartComponent {
+export default class EventEdit extends AbstractComponent {
   constructor(events) {
     super();
 
     this._events = events;
-    this._favorite = this._events.favorite;
-    this._submitHandler = null;
-    this._resetHandler = null;
-    this._eventType = this._events.eventTipe;
-    this._favoritesHandler();
-    this._changeType();
-
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._events, {favorite: this._favorite, eventType: this._eventType});
-  }
-
-  recoveryListeners() {
-    this.setSubmitHandler(this._submitHandler);
-    this.setResetHandler(this._resetHandler);
-    this._favoritesHandler();
-    this._changeType();
-  }
-
-  rerender() {
-    super.rerender();
+    return createEventEditTemplate(this._events);
   }
 
   setSubmitHandler(handler) {
     this.getElement().querySelector(`.trip-events__item`).addEventListener(`submit`, handler);
-    this._submitHandler = handler;
   }
 
   setResetHandler(handler) {
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
-    this._resetHandler = handler;
-  }
-
-  _favoritesHandler() {
-    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, (evt) => {
-      evt.preventDefault();
-      this._favorite = !this._favorite;
-      this.rerender();
-    });
-  }
-
-  _changeType() {
-    const tripTypes = this.getElement().querySelectorAll(`input[type="radio"]`);
-    tripTypes.forEach((it) => {
-      it.addEventListener(`change`, (evt) => {
-        this._eventType = evt.target.value;
-        this.rerender();
-      });
-    });
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
   }
 }
