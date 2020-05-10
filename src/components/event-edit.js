@@ -1,5 +1,9 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {formatDate, formatTime} from "../utils/date.js";
+import flatpickr from "flatpickr";
+
+import "flatpickr/dist/flatpickr.min.css";
+import "flatpickr/dist/themes/material_blue.css";
 
 const createOfferMarkup = (offers) => {
   const offerLists = [];
@@ -186,6 +190,10 @@ export default class EventEdit extends AbstractSmartComponent {
     this._submitHandler = null;
     this._resetHandler = null;
     this._eventType = this._event.eventType;
+    this._flatpickrStart = null;
+    this._flatpickrEnd = null;
+
+    this._applyFlatpickr();
     this._favoritesHandler();
     this._changeType();
 
@@ -204,6 +212,29 @@ export default class EventEdit extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
+    this._applyFlatpickr();
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickrStart || this._flatpickrEnd) {
+      this._flatpickrStart.destroy();
+      this._flatpickrEnd.destroy();
+      this._flatpickrStart = null;
+      this._flatpickrEnd = null;
+    }
+
+    const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
+    this._flatpickrStart = flatpickr(dateElements[0], {
+      allowInput: true,
+      dateFormat: `d/m/Y`,
+      defaultDate: this._event.dateStart || `today`,
+    });
+
+    this._flatpickrEnd = flatpickr(dateElements[1], {
+      allowInput: true,
+      dateFormat: `d/m/Y`,
+      defaultDate: this._event.dateEnd || `today`,
+    });
   }
 
   reset() {
