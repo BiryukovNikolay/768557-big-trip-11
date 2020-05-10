@@ -178,21 +178,21 @@ const createEventEditTemplate = (event, options = {}) => {
 };
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(events) {
+  constructor(event) {
     super();
 
-    this._events = events;
-    this._favorite = this._events.favorite;
+    this._event = event;
+    this._favorite = this._event.favorite;
     this._submitHandler = null;
     this._resetHandler = null;
-    this._eventType = this._events.eventTipe;
+    this._eventType = this._event.eventType;
     this._favoritesHandler();
     this._changeType();
 
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._events, {favorite: this._favorite, eventType: this._eventType});
+    return createEventEditTemplate(this._event, {favorite: this._favorite, eventType: this._eventType});
   }
 
   recoveryListeners() {
@@ -204,6 +204,12 @@ export default class EventEdit extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
+  }
+
+  reset() {
+    this._favorite = this._event.favorite;
+    this._eventType = this._event.eventType;
+    this.rerender();
   }
 
   setSubmitHandler(handler) {

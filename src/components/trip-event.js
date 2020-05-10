@@ -33,8 +33,8 @@ const createOffersMarkup = (offers) => {
 
 const createTripEventTemplate = (event) => {
 
-  const {eventTipe, dateStart, dateEnd, destination, priceValue} = event;
-  const typeIconName = `${eventTipe.toLowerCase()}.png`;
+  const {eventType, dateStart, dateEnd, destination, priceValue} = event;
+  const typeIconName = `${eventType.toLowerCase()}.png`;
   const startTime = formatTime(dateStart);
   const endTime = formatTime(dateEnd);
   const startDate = dateStart;
@@ -51,7 +51,7 @@ const createTripEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${typeIconName}" alt="Event type icon">
         </div>
-        <h3 class="event__title">${eventTipe} to ${destination}</h3>
+        <h3 class="event__title">${eventType} to ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${startDate}">${startTime}</time>

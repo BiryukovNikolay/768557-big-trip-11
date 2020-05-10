@@ -8,8 +8,8 @@ import {getDayEventsList, duration} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
 import EventController from "./event.js";
 
-const renderEvent = (eventListElement, event, onDataChange) => {
-  const eventController = new EventController(eventListElement, onDataChange);
+const renderEvent = (eventListElement, event, onDataChange, onViewChange) => {
+  const eventController = new EventController(eventListElement, onDataChange, onViewChange);
 
   eventController.render(event);
 
@@ -47,6 +47,7 @@ export default class DaysListController {
 
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
@@ -73,7 +74,7 @@ export default class DaysListController {
       const eventList = new EventListComponent();
 
       eventPoint.forEach((it) => {
-        const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange);
+        const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange);
         this._showedEventControllers = this._showedEventControllers.concat(newEvents);
       });
 
@@ -81,6 +82,10 @@ export default class DaysListController {
       render(daysListElement, dayEventList);
       pointCount++;
     });
+  }
+
+  _onViewChange() {
+    this._showedEventControllers.forEach((it) => it.setDefaultView());
   }
 
   _onSortTypeChange(type) {
@@ -108,8 +113,8 @@ export default class DaysListController {
     if (index === -1) {
       return;
     }
+
     this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
     this._showedEventControllers[index].render(this._events[index]);
-
   }
 }

@@ -2,10 +2,17 @@ import TripEventComponent from "../components/trip-event.js";
 import EventEditComponent from "../components/event-edit.js";
 import {render, replace} from "../utils/render.js";
 
+const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+};
+
 export default class EventController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
+    this._onViewChange = onViewChange;
+    this._mode = Mode.DEFAULT;
 
     this._eventComponent = null;
     this._eventEditComponent = null;
@@ -17,6 +24,9 @@ export default class EventController {
   }
 
   render(event) {
+    const oldEventComponent = this._taskComponent;
+    const oldEventEditComponent = this._taskEditComponent;
+
     this._eventComponent = new TripEventComponent(event);
     this._eventComponent.setRollupHandler(this._onEditButton);
 
@@ -24,15 +34,30 @@ export default class EventController {
     this._eventEditComponent.setSubmitHandler(this._onEditFormSubmit);
     this._eventEditComponent.setResetHandler(this._onResetButton);
 
-    render(this._container, this._eventComponent);
+    if (oldEventComponent && oldEventEditComponent) {
+      replace(this._eventComponent, oldEventComponent);
+      replace(this._eventEditComponent, oldEventEditComponent);
+    } else {
+      render(this._container, this._eventComponent);
+    }
+  }
+
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToEvent();
+    }
   }
 
   _replaceEventToEdit() {
+    this._onViewChange();
     replace(this._eventEditComponent, this._eventComponent);
+    this._mode = Mode.EDIT;
   }
 
   _replaceEditToEvent() {
+    this._eventEditComponent.reset();
     replace(this._eventComponent, this._eventEditComponent);
+    this._mode = Mode.DEFAULT;
   }
 
   _onEscKeyDown(evt) {
