@@ -33,16 +33,13 @@ const createOffersMarkup = (offers) => {
 
 const createTripEventTemplate = (event) => {
 
-  const {eventTipe, dateStart, dateEnd, destination, priceValue} = event;
-  const typeIconName = `${eventTipe.toLowerCase()}.png`;
+  const {eventType, dateStart, dateEnd, destination, priceValue} = event;
+  const typeIconName = `${eventType.toLowerCase()}.png`;
   const startTime = formatTime(dateStart);
   const endTime = formatTime(dateEnd);
   const startDate = dateStart;
   const endDate = dateEnd;
   const duration = formatDuration(dateStart, dateEnd);
-  const durationDays = duration.days ? `${duration.days}D` : ``;
-  const durationHours = duration.hours ? `${duration.hours}H` : ``;
-  const durationMinutes = duration.minutes ? `${duration.minutes}M` : ``;
   const offersMarkup = createOffersMarkup(event.offers);
 
   return (
@@ -51,14 +48,14 @@ const createTripEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${typeIconName}" alt="Event type icon">
         </div>
-        <h3 class="event__title">${eventTipe} to ${destination}</h3>
+        <h3 class="event__title">${eventType} to ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${startDate}">${startTime}</time>
             &mdash;
             <time class="event__end-time" datetime="${endDate}">${endTime}</time>
           </p>
-          <p class="event__duration">${durationDays} ${durationHours} ${durationMinutes} </p>
+          <p class="event__duration">${duration}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;

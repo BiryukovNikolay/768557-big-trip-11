@@ -2,21 +2,6 @@ export const EVENT_TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`
 
 export const DESTINATION = [`Budapest`, `Amsterdam`, `Prague`, `Minsk`, `Paris`, `Berlin`, `Vienna`, `Rome`, `Madrid`, `Warszawa`, `Zagreb`];
 
-export const MONTH_NAMES = [
-  `Jan`,
-  `Feb`,
-  `Mar`,
-  `Apr`,
-  `May`,
-  `Jun`,
-  `Jul`,
-  `Aug`,
-  `Sep`,
-  `Oct`,
-  `Nov`,
-  `Dec`
-];
-
 export const OFFER_NAMES = [
   {
     title: `add luggage`,

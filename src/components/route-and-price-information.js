@@ -1,4 +1,4 @@
-import {MONTH_NAMES} from "../const";
+import {formatMonthDay, formatMonth, formatDay} from "../utils/date.js";
 import AbstractComponent from "./abstract-component.js";
 
 const createRouteAndPriceInformationTemplate = (events) => {
@@ -15,13 +15,15 @@ const createRouteAndPriceInformationTemplate = (events) => {
     const middleLocation = middleDay.destination;
     const lastLocation = lastDay.destination;
 
-    const startDate = startDay.dateStart.getDate();
-    const startMonth = MONTH_NAMES[startDay.dateStart.getMonth()];
-    const endDay = lastDay.dateStart.getDate();
-    const endMonth = MONTH_NAMES[lastDay.dateStart.getMonth()];
+    const startDate = formatMonthDay(startDay.dateStart);
+    const startMonth = formatMonth(startDay.dateStart);
+    const endDate = formatMonthDay(lastDay.dateEnd);
+    const endMonth = formatMonth(startDay.dateEnd);
+    const endDay = formatDay(startDay.dateEnd);
 
-    route = `${startLocation}&mdash;${events.length > 3 ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}`;
-    date = `${startMonth} ${startDate}&nbsp;&mdash;&nbsp;${endMonth === startMonth ? `` : `${endMonth}`}${endDay}`;
+
+    route = `${startLocation} &mdash;${events.length > 3 ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}`;
+    date = `${startDate}&nbsp;&mdash;&nbsp;${endMonth === startMonth ? `${endDay}` : `${endDate}`}`;
     fullPrice = events.reduce((acc, it) => acc + it.priceValue, 0);
   }
 

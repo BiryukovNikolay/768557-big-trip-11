@@ -56,14 +56,15 @@ const generateOffers = (offerNames) => {
 
 const generateEvent = () => {
   return {
-    eventTipe: getRandomArrayItem(EVENT_TYPES),
+    eventType: getRandomArrayItem(EVENT_TYPES),
     destination: getRandomArrayItem(DESTINATION),
     priceValue: Math.floor(Math.random() * 100),
     description: getRandomNumderDescriptionBlock(1, 5),
     dateStart: getRandomDate(new Date(), false),
     dateEnd: getRandomDate(new Date(), true),
     photo: getRundomNumberOfPhotos(1, 5),
-    offers: generateOffers(OFFER_NAMES)
+    offers: generateOffers(OFFER_NAMES),
+    favorite: false
   };
 };
 
@@ -74,4 +75,4 @@ const generateEvents = (count) => {
     .sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime());
 };
 
-export {generateEvent, generateEvents};
+export {generateEvents};

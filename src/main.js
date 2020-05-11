@@ -1,4 +1,4 @@
-const EVENT_COUNT = 20;
+const EVENT_COUNT = 15;
 
 import FilterComponent from "./components/filter.js";
 import MenuControlComponent from "./components/menu-control.js";
