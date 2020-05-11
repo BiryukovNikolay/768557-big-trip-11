@@ -2,22 +2,19 @@ import AbstractComponent from "./abstract-component.js";
 import {formatDate, formatTime} from "../utils/date.js";
 
 const createOfferMarkup = (offers) => {
-  const offerLists = [];
-  offers.forEach((it, i) => {
-    const offerTitle = it.title;
-    const offerPrice = it.price;
-    offerLists.push(
-        `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${i < 2 ? `checked` : ``}>
-          <label class="event__offer-label" for="event-offer-luggage-1">
-            <span class="event__offer-title">${offerTitle}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${offerPrice}</span>
-          </label>
-        </div>`
+  return offers.map((it, i) => {
+    const {price, title} = it;
+    return (
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${i < 2 ? `checked` : ``}>
+        <label class="event__offer-label" for="event-offer-luggage-1">
+        <span class="event__offer-title">${title}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${price}</span>
+      </label>
+    </div>`
     );
-  });
-  return offerLists.join(`\n`);
+  }).join(`\n`);
 };
 
 const createSectionOffersMarkup = (offers) => {

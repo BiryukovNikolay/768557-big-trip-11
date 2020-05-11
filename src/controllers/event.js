@@ -30,7 +30,7 @@ export default class EventController {
     this._eventComponent = new TripEventComponent(event);
     this._eventComponent.setRollupHandler(this._onEditButton);
 
-    this._eventEditComponent = new EventEditComponent(event);
+    this._eventEditComponent = new EventEditComponent(event, this._onDataChange);
     this._eventEditComponent.setSubmitHandler(this._onEditFormSubmit);
     this._eventEditComponent.setResetHandler(this._onResetButton);
 
@@ -55,7 +55,6 @@ export default class EventController {
   }
 
   _replaceEditToEvent() {
-    this._eventEditComponent.reset();
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
   }
@@ -64,6 +63,7 @@ export default class EventController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
+      this._eventEditComponent.reset();
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
@@ -77,12 +77,14 @@ export default class EventController {
 
   _onResetButton(evt) {
     evt.preventDefault();
+    this._eventEditComponent.reset();
     this._replaceEditToEvent();
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _onEditFormSubmit(evt) {
     evt.preventDefault();
+    this._eventEditComponent.save();
     this._replaceEditToEvent();
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }

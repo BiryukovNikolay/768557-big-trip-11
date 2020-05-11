@@ -40,9 +40,6 @@ const createTripEventTemplate = (event) => {
   const startDate = dateStart;
   const endDate = dateEnd;
   const duration = formatDuration(dateStart, dateEnd);
-  const durationDays = duration.days ? `${duration.days}D` : ``;
-  const durationHours = duration.hours ? `${duration.hours}H` : ``;
-  const durationMinutes = duration.minutes ? `${duration.minutes}M` : ``;
   const offersMarkup = createOffersMarkup(event.offers);
 
   return (
@@ -58,7 +55,7 @@ const createTripEventTemplate = (event) => {
             &mdash;
             <time class="event__end-time" datetime="${endDate}">${endTime}</time>
           </p>
-          <p class="event__duration">${durationDays} ${durationHours} ${durationMinutes} </p>
+          <p class="event__duration">${duration}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;

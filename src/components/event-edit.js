@@ -6,22 +6,19 @@ import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/material_blue.css";
 
 const createOfferMarkup = (offers) => {
-  const offerLists = [];
-  offers.forEach((it, i) => {
-    const offerTitle = it.title;
-    const offerPrice = it.price;
-    offerLists.push(
-        `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${i < 2 ? `checked` : ``}>
-          <label class="event__offer-label" for="event-offer-luggage-1">
-            <span class="event__offer-title">${offerTitle}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${offerPrice}</span>
-          </label>
-        </div>`
+  return offers.map((it, i) => {
+    const {price, title} = it;
+    return (
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${i < 2 ? `checked` : ``}>
+        <label class="event__offer-label" for="event-offer-luggage-1">
+        <span class="event__offer-title">${title}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${price}</span>
+      </label>
+    </div>`
     );
-  });
-  return offerLists.join(`\n`);
+  }).join(`\n`);
 };
 
 const createSectionOffersMarkup = (offers) => {
@@ -182,9 +179,9 @@ const createEventEditTemplate = (event, options = {}) => {
 };
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(event) {
+  constructor(event, onDataChange) {
     super();
-
+    this._onDataChange = onDataChange;
     this._event = event;
     this._favorite = this._event.favorite;
     this._submitHandler = null;
@@ -192,11 +189,9 @@ export default class EventEdit extends AbstractSmartComponent {
     this._eventType = this._event.eventType;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
-
     this._applyFlatpickr();
     this._favoritesHandler();
     this._changeType();
-
   }
 
   getTemplate() {
@@ -240,6 +235,12 @@ export default class EventEdit extends AbstractSmartComponent {
   reset() {
     this._favorite = this._event.favorite;
     this._eventType = this._event.eventType;
+    this.rerender();
+  }
+
+  save() {
+    this._event.favorite = this._favorite;
+    this._event.eventType = this._eventType;
     this.rerender();
   }
 

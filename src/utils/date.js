@@ -1,56 +1,39 @@
-export const formatStartDate = (startDate) => {
-  const options = {month: `short`, day: `numeric`};
-  return new Intl.DateTimeFormat(`en-GB`, options).format(startDate);
-};
-
-export const getDayEventsList = (events) => {
-
-  const dayEventList = new Map();
-  events.forEach((it) => {
-    const dataDay = formatStartDate(it.dateStart);
-    if (!dayEventList.has(dataDay)) {
-      dayEventList.set(dataDay, []);
-    }
-    dayEventList.get(dataDay).push(it);
-  });
-  return dayEventList;
-};
-
-const castTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
-};
+import moment from "moment";
+import momentDurationFormatSetup from "moment-duration-format";
 
 export const duration = (dateStart, dateEnd) => {
-  const timeStart = dateStart.getTime();
-  const timeEnd = dateEnd.getTime();
-  return Math.abs(timeEnd - timeStart);
+  const timeStart = moment(dateStart);
+  const timeEnd = moment(dateEnd);
+  return Math.abs(timeStart.diff(timeEnd));
 };
 
 export const formatDuration = (dateStart, dateEnd) => {
-  const hourDiff = duration(dateStart, dateEnd);
-  const minDiff = hourDiff / 60 / 1000;
-  const hDiff = hourDiff / 60 / 60 / 1000;
-  const dDiff = hourDiff / 3600 / 1000 / 24;
-  const daysDuration = Math.floor(dDiff);
-  const humanReadable = {
-    days: daysDuration,
-    hours: Math.floor(hDiff - 24 * daysDuration),
-    minutes: Math.floor((minDiff - 60 * (24 * daysDuration + Math.floor(hDiff - 24 * daysDuration)))),
-  };
-  return humanReadable;
+  if (momentDurationFormatSetup) {
+    return moment.duration(duration(dateStart, dateEnd), `milliseconds`).format(`d[D] h[H] m[M]`);
+  }
+  return ``;
 };
 
 export const formatTime = (date) => {
-  const hours = castTimeFormat(date.getHours() % 12);
-  const minutes = castTimeFormat(date.getMinutes());
-
-  return `${hours}:${minutes}`;
+  return moment(date).format(`hh:mm`);
 };
 
 export const formatDate = (date) => {
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const year = `${date.getFullYear()}`;
+  return moment(date).format(`DD\MM\YY`);
+};
 
-  return `${day}/0${month}/${year.substring(2, 4)}`;
+export const formatDayMonth = (date) => {
+  return moment(date).format(`D MMM`);
+};
+
+export const formatMonthDay = (date) => {
+  return moment(date).format(`MMM D`);
+};
+
+export const formatMonth = (date) => {
+  return moment(date).format(`MMM`);
+};
+
+export const formatDay = (date) => {
+  return moment(date).format(`D`);
 };

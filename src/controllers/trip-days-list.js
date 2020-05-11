@@ -4,7 +4,7 @@ import DaysListComponent from "../components/trip-days-list.js";
 import SortComponent from "../components/sort.js";
 import NoEventsComponent from "../components/no-event.js";
 import {render} from "../utils/render.js";
-import {getDayEventsList, duration} from "../utils/date.js";
+import {formatDayMonth, duration} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
 import EventController from "./event.js";
 
@@ -32,6 +32,18 @@ const getSortedEvents = (events, sortType) => {
       break;
   }
   return sortedTasks;
+};
+
+const getDayEventsList = (events) => {
+  const dayEventList = new Map();
+  events.forEach((it) => {
+    const dataDay = formatDayMonth(it.dateStart);
+    if (!dayEventList.has(dataDay)) {
+      dayEventList.set(dataDay, []);
+    }
+    dayEventList.get(dataDay).push(it);
+  });
+  return dayEventList;
 };
 
 export default class DaysListController {
@@ -113,7 +125,6 @@ export default class DaysListController {
     if (index === -1) {
       return;
     }
-
     this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
     this._showedEventControllers[index].render(this._events[index]);
   }
