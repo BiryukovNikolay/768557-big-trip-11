@@ -56,6 +56,7 @@ const generateOffers = (offerNames) => {
 
 const generateEvent = () => {
   return {
+    id: String(new Date() + Math.random()),
     eventType: getRandomArrayItem(EVENT_TYPES),
     destination: getRandomArrayItem(DESTINATION),
     priceValue: Math.floor(Math.random() * 100),

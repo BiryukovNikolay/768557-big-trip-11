@@ -25,3 +25,8 @@ export const OFFER_NAMES = [
   }
 ];
 
+export const FilterType = {
+  EVERYTHING: `everithing`,
+  FUTURE: `future`,
+  PAST: `past`,
+};

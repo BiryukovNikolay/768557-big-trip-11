@@ -37,3 +37,9 @@ export const formatMonth = (date) => {
 export const formatDay = (date) => {
   return moment(date).format(`D`);
 };
+
+export const dateDiff = (dateA, dateB) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+  return a.diff(b);
+};

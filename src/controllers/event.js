@@ -1,6 +1,6 @@
 import TripEventComponent from "../components/trip-event.js";
 import EventEditComponent from "../components/event-edit.js";
-import {render, replace} from "../utils/render.js";
+import {render, replace, remove} from "../utils/render.js";
 
 const Mode = {
   DEFAULT: `default`,
@@ -46,6 +46,12 @@ export default class EventController {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
     }
+  }
+
+  destroy() {
+    remove(this._eventEditComponent);
+    remove(this._eventComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _replaceEventToEdit() {
