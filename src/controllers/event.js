@@ -1,10 +1,20 @@
 import TripEventComponent from "../components/trip-event.js";
 import EventEditComponent from "../components/event-edit.js";
-import {render, replace, remove} from "../utils/render.js";
+import {render, replace, remove, RenderPosition} from "../utils/render.js";
 
-const Mode = {
+export const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
+  ADDING: `adding`,
+};
+
+export const EmptyEvent = {
+  eventType: `bus`,
+  destination: ``,
+  priceValue: `0`,
+  dateStart: new Date(),
+  dateEnd: new Date(),
+  offers: [],
 };
 
 export default class EventController {
@@ -23,9 +33,11 @@ export default class EventController {
     this._onEditFormSubmit = this._onEditFormSubmit.bind(this);
   }
 
-  render(event) {
+  render(event, mode) {
     const oldEventComponent = this._taskComponent;
     const oldEventEditComponent = this._taskEditComponent;
+    this._mode = mode;
+    this.event = event;
 
     this._eventComponent = new TripEventComponent(event);
     this._eventComponent.setRollupHandler(this._onEditButton);
@@ -33,13 +45,31 @@ export default class EventController {
     this._eventEditComponent = new EventEditComponent(event, this._onDataChange);
     this._eventEditComponent.setSubmitHandler(this._onEditFormSubmit);
     this._eventEditComponent.setResetHandler(this._onResetButton);
+    this._eventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(event, null));
 
-    if (oldEventComponent && oldEventEditComponent) {
-      replace(this._eventComponent, oldEventComponent);
-      replace(this._eventEditComponent, oldEventEditComponent);
-    } else {
-      render(this._container, this._eventComponent);
+    switch (mode) {
+      case Mode.DEFAULT:
+        if (oldEventComponent && oldEventEditComponent) {
+          replace(this._eventComponent, oldEventComponent);
+          replace(this._eventEditComponent, oldEventEditComponent);
+          this._replaceEditToTask();
+        } else {
+          render(this._container, this._eventComponent);
+        }
+        break;
+      case Mode.ADDING:
+        if (oldEventComponent && oldEventEditComponent) {
+          remove(oldEventComponent);
+          remove(oldEventEditComponent);
+        }
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        render(this._container, this._eventEditComponent, RenderPosition.AFTERBEGIN);
+        break;
     }
+  }
+
+  getEvent() {
+    return this.event;
   }
 
   setDefaultView() {
@@ -61,6 +91,9 @@ export default class EventController {
   }
 
   _replaceEditToEvent() {
+    if (this._mode === Mode.ADDING) {
+      remove(this._eventEditComponent);
+    }
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
   }
@@ -69,6 +102,11 @@ export default class EventController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
+      if (this._mode === Mode.ADDING) {
+        this._onDataChange(EmptyEvent, null);
+        remove(this._eventEditComponent);
+        this._mode = Mode.DEFAULT;
+      }
       this._eventEditComponent.reset();
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
@@ -77,11 +115,27 @@ export default class EventController {
 
   _onEditButton(evt) {
     evt.preventDefault();
+    if (this._mode === Mode.ADDING) {
+      this._onDataChange(EmptyEvent, null);
+    }
     this._replaceEventToEdit();
     document.addEventListener(`keydown`, this._onEscKeyDown);
   }
 
+  _onDeleteButton(evt) {
+    evt.preventDefault();
+    this._eventEditComponent.reset();
+    this._destroy();
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+
   _onResetButton(evt) {
+    if (this._mode === Mode.ADDING) {
+      this._onDataChange(EmptyEvent, null);
+      remove(this._eventEditComponent);
+      this._mode = Mode.DEFAULT;
+    }
     evt.preventDefault();
     this._eventEditComponent.reset();
     this._replaceEditToEvent();
@@ -90,6 +144,8 @@ export default class EventController {
 
   _onEditFormSubmit(evt) {
     evt.preventDefault();
+    const data = this._eventEditComponent.getData();
+    this._onDataChange(this.event, data);
     this._eventEditComponent.save();
     this._replaceEditToEvent();
     document.removeEventListener(`keydown`, this._onEscKeyDown);

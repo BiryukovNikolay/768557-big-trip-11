@@ -3,15 +3,15 @@ import TripDayComponent from "../components/trip-day.js";
 import DaysListComponent from "../components/trip-days-list.js";
 import SortComponent from "../components/sort.js";
 import NoEventsComponent from "../components/no-event.js";
-import {render} from "../utils/render.js";
+import {render, remove} from "../utils/render.js";
 import {formatDayMonth, duration} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
-import EventController from "./event.js";
+import EventController, {Mode as EventControllerMode, EmptyEvent} from "./event.js";
 
 const renderEvent = (eventListElement, event, onDataChange, onViewChange) => {
   const eventController = new EventController(eventListElement, onDataChange, onViewChange);
 
-  eventController.render(event);
+  eventController.render(event, EventControllerMode.DEFAULT);
 
   return eventController;
 };
@@ -46,6 +46,7 @@ const getDayEventsList = (events) => {
   return dayEventList;
 };
 
+
 export default class DaysListController {
   constructor(container, eventsModel) {
 
@@ -58,6 +59,8 @@ export default class DaysListController {
     this._sortComponent = new SortComponent();
     this._eventList = new EventListComponent();
     this._daysList = new DaysListComponent();
+    this._creatingEvent = null;
+
 
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
@@ -82,13 +85,15 @@ export default class DaysListController {
   }
 
   _removeEvents() {
+    remove(this._daysList);
     this._showedEventControllers.forEach((eventController) => eventController.destroy());
     this._showedEventControllers = [];
   }
 
   _getDefaultDaylist(eventsList) {
     const daysListElement = this._container.querySelector(`.trip-days`);
-    const dayEventsList = getDayEventsList(eventsList);
+    const dayEventsList = getDayEventsList(eventsList.sort((a, b) => a.dateStart - b.dateStart));
+
     let pointCount = 1;
     dayEventsList.forEach((eventPoint, day) => {
       const dayEventList = new TripDayComponent(day, pointCount);
@@ -105,6 +110,19 @@ export default class DaysListController {
     });
   }
 
+  createEvents() {
+    if (this._creatingEvent) {
+      return;
+    }
+    this._showedEventControllers.forEach((it) => {
+      it.setDefaultView();
+    });
+    const taskListElement = this._daysList.getElement();
+    this._creatingEvent = new EventController(taskListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
+  }
+
+
   _onViewChange() {
     this._showedEventControllers.forEach((it) => it.setDefaultView());
   }
@@ -116,6 +134,7 @@ export default class DaysListController {
       this._getDefaultDaylist(events);
       return;
     }
+
 
     const sortEvents = getSortedEvents(events, type);
     this._daysList.getElement().innerHTML = ``;
@@ -130,7 +149,6 @@ export default class DaysListController {
   }
 
   _updateEvents() {
-    this._daysList.getElement().innerHTML = ``;
     this._removeEvents();
     this.render();
   }
@@ -140,12 +158,30 @@ export default class DaysListController {
   }
 
   _onDataChange(oldData, newData) {
-    const isSuccess = this._eventsModel.updateEvents(oldData.id, newData);
-    const eventController = this._showedTaskControllers.find((it) => {
-      return oldData.id === it.id;
+    const eventController = this._showedEventControllers.find((it) => {
+      return oldData.id === it.getEvent().id;
     });
-    if (isSuccess) {
-      eventController.render(newData);
+
+    if (oldData === EmptyEvent) {
+      if (newData === null) {
+        this._creatingEvent.destroy();
+        this._updateEvents();
+        this._creatingEvent = null;
+      } else {
+        this._eventsModel.addEvent(newData);
+        this._removeEvents();
+        this.render();
+        this._creatingEvent = null;
+      }
+
+    } else if (newData === null) {
+      this._eventsModel.removeEvent(oldData.id);
+      this._updateEvents();
+    } else {
+      const isSuccess = this._eventsModel.updateEvents(oldData.id, newData);
+      if (isSuccess) {
+        eventController.render(newData, EventControllerMode.DEFAULT);
+      }
     }
   }
 }

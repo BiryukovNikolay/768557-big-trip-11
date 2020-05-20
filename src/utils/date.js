@@ -22,6 +22,10 @@ export const formatDate = (date) => {
   return moment(date).format(`DD\MM\YY`);
 };
 
+export const formatISO = (date) => {
+  return moment(date).format();
+};
+
 export const formatDayMonth = (date) => {
   return moment(date).format(`D MMM`);
 };

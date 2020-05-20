@@ -3,11 +3,11 @@ import {dateDiff} from "../utils/date.js";
 
 
 export const getFutureEvents = (events, date) => {
-  return events.filter((event) => dateDiff(event.dateStart, date) < 0);
+  return events.filter((event) => dateDiff(event.dateStart, date) > 0);
 };
 
 export const getPastEvents = (events, date) => {
-  return events.filter((event) => dateDiff(event.dateStart, date) > 0);
+  return events.filter((event) => dateDiff(event.dateStart, date) < 0);
 };
 
 

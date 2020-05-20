@@ -1,4 +1,5 @@
 import {getRandomInteger, getRandomArrayItem} from "../utils/random.js";
+import {formatISO} from "../utils/date.js";
 import {EVENT_TYPES, DESTINATION, OFFER_NAMES} from "../const";
 
 const DescriptionItem = [
@@ -61,8 +62,8 @@ const generateEvent = () => {
     destination: getRandomArrayItem(DESTINATION),
     priceValue: Math.floor(Math.random() * 100),
     description: getRandomNumderDescriptionBlock(1, 5),
-    dateStart: getRandomDate(new Date(), false),
-    dateEnd: getRandomDate(new Date(), true),
+    dateStart: formatISO(getRandomDate(new Date(), false)),
+    dateEnd: formatISO(getRandomDate(new Date(), true)),
     photo: getRundomNumberOfPhotos(1, 5),
     offers: generateOffers(OFFER_NAMES),
     favorite: false
@@ -73,7 +74,7 @@ const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
     .map(generateEvent)
-    .sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime());
+    .sort((a, b) => a.dateStart - b.dateStart);
 };
 
 export {generateEvents};

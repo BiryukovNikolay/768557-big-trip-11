@@ -1,5 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {formatDate, formatTime} from "../utils/date.js";
+import {TRANSFERS, ACTIVITIES} from "../const";
 import flatpickr from "flatpickr";
 
 import "flatpickr/dist/flatpickr.min.css";
@@ -22,14 +23,13 @@ const createOfferMarkup = (offers) => {
 };
 
 const createSectionOffersMarkup = (offers) => {
-  const offerMarkup = createOfferMarkup(offers);
   if (offers.length !== 0) {
     return (
       `<section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-            ${offerMarkup}
+            ${createOfferMarkup(offers)}
           </div>
         </section>
       </section>
@@ -40,9 +40,28 @@ const createSectionOffersMarkup = (offers) => {
   }
 };
 
+const createTypeMarkup = (eventType, types) => {
+  const eventTypeLowerCase = eventType.toLowerCase();
+  return types.map((it) => {
+    const inputValue = it.toLowerCase();
+    const isChecked = () => {
+      if (eventTypeLowerCase === inputValue) {
+        return `checked`;
+      } else {
+        return ``;
+      }
+    };
+    return (
+      `<div class="event__type-item">
+        <input id="event-type-${inputValue}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${inputValue}" ${isChecked()}>
+        <label class="event__type-label  event__type-label--${inputValue}" for="event-type-${inputValue}-1">${it}</label>
+      </div>`
+    );
+  }).join(`\n`);
+};
+
 
 const createEventEditTemplate = (event, options = {}) => {
-
   const {offers, destination, priceValue, dateStart, dateEnd} = event;
   const {favorite, eventType} = options;
   const typeIconName = `${eventType.toLowerCase()}.png`;
@@ -67,60 +86,12 @@ const createEventEditTemplate = (event, options = {}) => {
                 <div class="event__type-list">
                   <fieldset class="event__type-group">
                     <legend class="visually-hidden">Transfer</legend>
-
-                    <div class="event__type-item">
-                      <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                      <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                      <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                      <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                      <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                      <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                      <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                      <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                    </div>
+                    ${createTypeMarkup(eventType, TRANSFERS)}
                   </fieldset>
 
                   <fieldset class="event__type-group">
                     <legend class="visually-hidden">Activity</legend>
-
-                    <div class="event__type-item">
-                      <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                      <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                      <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                    </div>
-
-                    <div class="event__type-item">
-                      <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                      <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                    </div>
+                    ${createTypeMarkup(eventType, ACTIVITIES)}
                   </fieldset>
                 </div>
               </div>
@@ -178,6 +149,17 @@ const createEventEditTemplate = (event, options = {}) => {
   );
 };
 
+const parseFormData = (formData) => {
+  return {
+    eventType: formData.get(`event-type`),
+    destination: formData.get(`event-destination`),
+    priceValue: +formData.get(`event-price`),
+    dateStart: Date.parse(formData.get(`event-start-time`)),
+    dateEnd: Date.parse(formData.get(`event-end-time`)),
+    offers: [],
+  };
+};
+
 export default class EventEdit extends AbstractSmartComponent {
   constructor(event, onDataChange) {
     super();
@@ -187,6 +169,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._submitHandler = null;
     this._resetHandler = null;
     this._eventType = this._event.eventType;
+    this._deleteButtonClickHandler = null;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._applyFlatpickr();
@@ -198,7 +181,19 @@ export default class EventEdit extends AbstractSmartComponent {
     return createEventEditTemplate(this._event, {favorite: this._favorite, eventType: this._eventType});
   }
 
+  removeElement() {
+    if (this._flatpickrStart || this._flatpickrEnd) {
+      this._flatpickrStart.destroy();
+      this._flatpickrEnd.destroy();
+      this._flatpickrStart = null;
+      this._flatpickrEnd = null;
+    }
+
+    super.removeElement();
+  }
+
   recoveryListeners() {
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this.setSubmitHandler(this._submitHandler);
     this.setResetHandler(this._resetHandler);
     this._favoritesHandler();
@@ -220,14 +215,18 @@ export default class EventEdit extends AbstractSmartComponent {
 
     const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
     this._flatpickrStart = flatpickr(dateElements[0], {
+      altInput: true,
       allowInput: true,
-      dateFormat: `d/m/Y`,
+      altFormat: `d/m/Y`,
+      dateFormat: `Z`,
       defaultDate: this._event.dateStart || `today`,
     });
 
     this._flatpickrEnd = flatpickr(dateElements[1], {
+      altInput: true,
       allowInput: true,
-      dateFormat: `d/m/Y`,
+      altFormat: `d/m/Y`,
+      dateFormat: `Z`,
       defaultDate: this._event.dateEnd || `today`,
     });
   }
@@ -244,8 +243,20 @@ export default class EventEdit extends AbstractSmartComponent {
     this.rerender();
   }
 
+  getData() {
+    const form = this.getElement().querySelector(`.event--edit`);
+    const formData = new FormData(form);
+    return parseFormData(formData);
+  }
+
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+    this._deleteButtonClickHandler = handler;
+  }
+
   setSubmitHandler(handler) {
-    this.getElement().querySelector(`.trip-events__item`).addEventListener(`submit`, handler);
+    this.getElement().querySelector(`.event--edit`).addEventListener(`submit`, handler);
     this._submitHandler = handler;
   }
 
@@ -263,12 +274,14 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   _changeType() {
-    const tripTypes = this.getElement().querySelectorAll(`input[type="radio"]`);
-    tripTypes.forEach((it) => {
-      it.addEventListener(`change`, (evt) => {
-        this._eventType = evt.target.value;
-        this.rerender();
-      });
+    this.getElement().addEventListener(`change`, (evt) => {
+      if (evt.target.type !== `radio`) {
+        return;
+      }
+      evt.target.checked = true;
+      this._eventType = evt.target.value;
+      this._event.eventType = evt.target.value;
+      this.rerender();
     });
   }
 }

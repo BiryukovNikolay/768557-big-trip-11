@@ -1,5 +1,6 @@
 export const EVENT_TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
-
+export const TRANSFERS = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`];
+export const ACTIVITIES = [`Check-in`, `Sightseeing`, `Restaurant`];
 export const DESTINATION = [`Budapest`, `Amsterdam`, `Prague`, `Minsk`, `Paris`, `Berlin`, `Vienna`, `Rome`, `Madrid`, `Warszawa`, `Zagreb`];
 
 export const OFFER_NAMES = [
