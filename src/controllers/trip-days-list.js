@@ -128,6 +128,7 @@ export default class DaysListController {
   }
 
   _onSortTypeChange(type) {
+    this._creatingEvent = null;
     const events = this._eventsModel.getEvents();
     if (type === SortType.DEFAULT) {
       this._daysList.getElement().innerHTML = ``;
@@ -154,6 +155,7 @@ export default class DaysListController {
   }
 
   _onFilterChange() {
+    this._creatingEvent = null;
     this._updateEvents();
   }
 

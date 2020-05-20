@@ -38,7 +38,6 @@ export default class Events {
   }
 
   addEvent(event) {
-    console.log(event);
     this._events = [].concat(event, this._events);
     this._callHandlers(this._dataChangeHandlers);
   }
@@ -71,8 +70,6 @@ export default class Events {
   }
 
   _callHandlers(handlers) {
-    console.log(this._events);
-    console.log(handlers);
     handlers.forEach((handler) => handler());
   }
 }

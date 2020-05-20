@@ -1,7 +1,7 @@
 const EVENT_COUNT = 15;
 
 import EventsModel from "./models/trip-events.js";
-import MenuControlComponent, {MenuItem} from "./components/menu-control.js";
+import MenuControlComponent from "./components/menu-control.js";
 import BtnNewEventComponent from "./components/btn-new-event.js";
 import DaysListController from "./controllers/trip-days-list.js";
 import RouteAndPriceController from "./controllers/header.js";
@@ -30,7 +30,6 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 const headerController = new RouteAndPriceController(tripMainElement, eventsModel);
 headerController.render();
 
-//render(tripMainElement, new RouteAndPriceComponent(eventsModel), RenderPosition.AFTERBEGIN);
 const daysListController = new DaysListController(tripEventsElement, eventsModel);
 daysListController.render();
 

@@ -15,6 +15,7 @@ export const EmptyEvent = {
   dateStart: new Date(),
   dateEnd: new Date(),
   offers: [],
+  newEvent: true,
 };
 
 export default class EventController {
@@ -93,6 +94,7 @@ export default class EventController {
   _replaceEditToEvent() {
     if (this._mode === Mode.ADDING) {
       remove(this._eventEditComponent);
+
     }
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;

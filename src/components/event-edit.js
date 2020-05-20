@@ -22,7 +22,10 @@ const createOfferMarkup = (offers) => {
   }).join(`\n`);
 };
 
-const createSectionOffersMarkup = (offers) => {
+const createSectionEventDetailsMarkup = (offers, description, photo) => {
+  const isDescription = description ? `${createDescriptionMarkup(description)}` : ``;
+  const isPhoto = photo ? `${createPhotoMarkup(photo)}` : ``;
+
   if (offers.length !== 0) {
     return (
       `<section class="event__details">
@@ -31,6 +34,10 @@ const createSectionOffersMarkup = (offers) => {
           <div class="event__available-offers">
             ${createOfferMarkup(offers)}
           </div>
+          <section class="event__section  event__section--destination">
+          ${isDescription}
+          ${isPhoto}
+        </section>
         </section>
       </section>
       `
@@ -60,18 +67,51 @@ const createTypeMarkup = (eventType, types) => {
   }).join(`\n`);
 };
 
+const createDescriptionMarkup = (description) => {
+  return (
+    `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
+     <p class="event__destination-description">${description}</p>`
+  );
+};
+
+const createPhotoMarkup = (photo) => {
+  return (
+    `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${photo}
+      </div>
+    </div>`
+  );
+};
+
+const createEditoMarkup = (favorite) => {
+  const isFavorite = favorite ? `checked` : ``;
+  return (
+    `<input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite}>
+      <label class="event__favorite-btn" for="event-favorite-1">
+        <span class="visually-hidden">Add to favorite</span>
+        <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+          <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+        </svg>
+      </label>
+
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>`
+  );
+};
+
 
 const createEventEditTemplate = (event, options = {}) => {
-  const {offers, destination, priceValue, dateStart, dateEnd} = event;
+  const {description, photo, offers, destination, priceValue, dateStart, dateEnd, newEvent} = event;
   const {favorite, eventType} = options;
   const typeIconName = `${eventType.toLowerCase()}.png`;
-  const avalibleOffer = createSectionOffersMarkup(offers);
+  const eventDetails = createSectionEventDetailsMarkup(offers, description, photo);
   const dayStart = formatDate(dateStart);
   const timeStart = formatTime(dateStart);
   const dayEnd = formatDate(dateEnd);
   const timeEnd = formatTime(dateEnd);
-  const isFavorite = favorite ? `checked` : ``;
-
+  const isNewEvent = newEvent ? `` : `${createEditoMarkup(favorite)}`;
   return (
     `<li class="trip-events__item trip-form">
       <form class="event trip-events__item  event  event--edit" action="#" method="post">
@@ -130,20 +170,10 @@ const createEventEditTemplate = (event, options = {}) => {
 
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
               <button class="event__reset-btn" type="reset">Delete</button>
-
-              <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite}>
-              <label class="event__favorite-btn" for="event-favorite-1">
-                <span class="visually-hidden">Add to favorite</span>
-                <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-                  <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-                </svg>
-              </label>
-
-              <button class="event__rollup-btn" type="button">
-                <span class="visually-hidden">Open event</span>
-              </button>
+              ${isNewEvent}
+              
             </header>
-              ${avalibleOffer}
+              ${eventDetails}
           </form>
         </li>`
   );
@@ -261,16 +291,22 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   setResetHandler(handler) {
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+    const rollupBtn = this.getElement().querySelector(`.event__rollup-btn`);
+    if (rollupBtn) {
+      rollupBtn.addEventListener(`click`, handler);
+    }
     this._resetHandler = handler;
   }
 
   _favoritesHandler() {
-    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, (evt) => {
-      evt.preventDefault();
-      this._favorite = !this._favorite;
-      this.rerender();
-    });
+    const favoriteBlock = this.getElement().querySelector(`.event__favorite-btn`);
+    if (favoriteBlock) {
+      favoriteBlock.addEventListener(`click`, (evt) => {
+        evt.preventDefault();
+        this._favorite = !this._favorite;
+        this.rerender();
+      });
+    }
   }
 
   _changeType() {

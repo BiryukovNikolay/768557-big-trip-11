@@ -17,7 +17,6 @@ export default class FilterController {
   }
 
   render() {
-    console.log(this._eventsModel);
     const container = this._container;
     const filters = Object.values(FilterType).map((filterType) => {
       return {
@@ -43,7 +42,6 @@ export default class FilterController {
   }
 
   _onDataChange() {
-    console.log(`internet`);
     this.render();
   }
 }

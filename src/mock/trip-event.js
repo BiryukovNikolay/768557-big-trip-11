@@ -73,8 +73,7 @@ const generateEvent = () => {
 const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
-    .map(generateEvent)
-    .sort((a, b) => a.dateStart - b.dateStart);
+    .map(generateEvent);
 };
 
 export {generateEvents};
