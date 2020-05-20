@@ -1,6 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {formatDate, formatTime} from "../utils/date.js";
-import {TRANSFERS, ACTIVITIES} from "../const";
+import {generateDestinationList} from "../mock/destination.js";
+import {TRANSFERS, ACTIVITIES, DESTINATIONS} from "../const";
 import flatpickr from "flatpickr";
 
 import "flatpickr/dist/flatpickr.min.css";
@@ -22,23 +23,33 @@ const createOfferMarkup = (offers) => {
   }).join(`\n`);
 };
 
+const createOfferBlock = (offers) => {
+  if (offers.length !== 0) {
+    return (
+      `<section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${createOfferMarkup(offers)}
+        </div>
+      </section>`
+    );
+  } else {
+    return ``;
+  }
+};
+
 const createSectionEventDetailsMarkup = (offers, description, photo) => {
   const isDescription = description ? `${createDescriptionMarkup(description)}` : ``;
   const isPhoto = photo ? `${createPhotoMarkup(photo)}` : ``;
 
-  if (offers.length !== 0) {
+  if (offers.length !== 0 || description || photo) {
     return (
       `<section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          <div class="event__available-offers">
-            ${createOfferMarkup(offers)}
-          </div>
+          ${createOfferBlock(offers)}
           <section class="event__section  event__section--destination">
           ${isDescription}
           ${isPhoto}
-        </section>
-        </section>
+          </section>
       </section>
       `
     );
@@ -64,6 +75,12 @@ const createTypeMarkup = (eventType, types) => {
         <label class="event__type-label  event__type-label--${inputValue}" for="event-type-${inputValue}-1">${it}</label>
       </div>`
     );
+  }).join(`\n`);
+};
+
+const createDestinationsMarkup = (destinations) => {
+  return destinations.map((it) => {
+    return `<option value="${it}"></option>`;
   }).join(`\n`);
 };
 
@@ -101,10 +118,23 @@ const createEditoMarkup = (favorite) => {
   );
 };
 
+const typeOfDestination = (destination) => {
+  const destinationList = generateDestinationList();
+  return destinationList.find((it) => {
+    if (it.name === destination) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+};
+
 
 const createEventEditTemplate = (event, options = {}) => {
-  const {description, photo, offers, destination, priceValue, dateStart, dateEnd, newEvent} = event;
-  const {favorite, eventType} = options;
+  const {photo, offers, priceValue, dateStart, dateEnd, newEvent} = event;
+  const {favorite, eventType, destination} = options;
+  const {description} = typeOfDestination(destination) ? typeOfDestination(destination) : {description: ``};
+
   const typeIconName = `${eventType.toLowerCase()}.png`;
   const eventDetails = createSectionEventDetailsMarkup(offers, description, photo);
   const dayStart = formatDate(dateStart);
@@ -142,9 +172,7 @@ const createEventEditTemplate = (event, options = {}) => {
                 </label>
                 <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
                 <datalist id="destination-list-1">
-                  <option value="Amsterdam"></option>
-                  <option value="Geneva"></option>
-                  <option value="Chamonix"></option>
+                ${createDestinationsMarkup(DESTINATIONS)}
                 </datalist>
               </div>
 
@@ -199,16 +227,18 @@ export default class EventEdit extends AbstractSmartComponent {
     this._submitHandler = null;
     this._resetHandler = null;
     this._eventType = this._event.eventType;
+    this._eventDestination = this._event.destination;
     this._deleteButtonClickHandler = null;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._applyFlatpickr();
     this._favoritesHandler();
     this._changeType();
+    this._changeDestination();
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, {favorite: this._favorite, eventType: this._eventType});
+    return createEventEditTemplate(this._event, {favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination});
   }
 
   removeElement() {
@@ -228,6 +258,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this.setResetHandler(this._resetHandler);
     this._favoritesHandler();
     this._changeType();
+    this._changeDestination();
   }
 
   rerender() {
@@ -317,6 +348,16 @@ export default class EventEdit extends AbstractSmartComponent {
       evt.target.checked = true;
       this._eventType = evt.target.value;
       this._event.eventType = evt.target.value;
+      this.rerender();
+    });
+  }
+
+  _changeDestination() {
+    const destinationList = this.getElement().querySelector(`#event-destination-1`);
+
+    destinationList.addEventListener(`change`, (evt) => {
+      this._eventDestination = evt.target.value;
+      this._event.destination = evt.target.value;
       this.rerender();
     });
   }
