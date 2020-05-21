@@ -1,19 +1,29 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {formatDate, formatTime} from "../utils/date.js";
 import {generateDestinationList} from "../mock/destination.js";
-import {TRANSFERS, ACTIVITIES, DESTINATIONS} from "../const";
+import {availableOffers} from "../mock/trip-event.js";
+import {TRANSFERS, ACTIVITIES, DESTINATIONS, OFFERS} from "../const";
 import flatpickr from "flatpickr";
 
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/material_blue.css";
 
-const createOfferMarkup = (offers) => {
-  return offers.map((it, i) => {
+const createOfferMarkup = (offers, checkedOffers) => {
+  return offers.map((it) => {
     const {price, title} = it;
+    const titleForAttribute = title.toLowerCase().replace(/ /g, `-`);
+    const checkedOffer = checkedOffers.find((that) => {
+      if (that === it) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
     return (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${i < 2 ? `checked` : ``}>
-        <label class="event__offer-label" for="event-offer-luggage-1">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${titleForAttribute}-1" type="checkbox" aria-label="${title}" name="event-offer-${titleForAttribute}" ${checkedOffer ? `checked` : ``}>
+        <label class="event__offer-label" for="event-offer-${titleForAttribute}-1">
         <span class="event__offer-title">${title}</span>
         &plus;
         &euro;&nbsp;<span class="event__offer-price">${price}</span>
@@ -23,13 +33,13 @@ const createOfferMarkup = (offers) => {
   }).join(`\n`);
 };
 
-const createOfferBlock = (offers) => {
+const createOfferBlock = (offers, checkedOffers) => {
   if (offers.length !== 0) {
     return (
       `<section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${createOfferMarkup(offers)}
+          ${createOfferMarkup(offers, checkedOffers)}
         </div>
       </section>`
     );
@@ -38,14 +48,14 @@ const createOfferBlock = (offers) => {
   }
 };
 
-const createSectionEventDetailsMarkup = (offers, description, photo) => {
+const createSectionEventDetailsMarkup = (offers, description, photo, checkedOffers) => {
   const isDescription = description ? `${createDescriptionMarkup(description)}` : ``;
   const isPhoto = photo ? `${createPhotoMarkup(photo)}` : ``;
 
   if (offers.length !== 0 || description || photo) {
     return (
       `<section class="event__details">
-          ${createOfferBlock(offers)}
+          ${createOfferBlock(offers, checkedOffers)}
           <section class="event__section  event__section--destination">
           ${isDescription}
           ${isPhoto}
@@ -118,8 +128,9 @@ const createEditoMarkup = (favorite) => {
   );
 };
 
+const destinationList = generateDestinationList();
+
 const typeOfDestination = (destination) => {
-  const destinationList = generateDestinationList();
   return destinationList.find((it) => {
     if (it.name === destination) {
       return true;
@@ -131,12 +142,11 @@ const typeOfDestination = (destination) => {
 
 
 const createEventEditTemplate = (event, options = {}) => {
-  const {photo, offers, priceValue, dateStart, dateEnd, newEvent} = event;
-  const {favorite, eventType, destination} = options;
+  const {photo, priceValue, dateStart, dateEnd, newEvent} = event;
+  const {favorite, offers, eventType, destination, availableTypeOffers} = options;
   const {description} = typeOfDestination(destination) ? typeOfDestination(destination) : {description: ``};
-
   const typeIconName = `${eventType.toLowerCase()}.png`;
-  const eventDetails = createSectionEventDetailsMarkup(offers, description, photo);
+  const eventDetails = createSectionEventDetailsMarkup(availableTypeOffers, description, photo, offers);
   const dayStart = formatDate(dateStart);
   const timeStart = formatTime(dateStart);
   const dayEnd = formatDate(dateEnd);
@@ -215,7 +225,6 @@ const parseFormData = (formData) => {
     priceValue: +formData.get(`event-price`),
     dateStart: Date.parse(formData.get(`event-start-time`)),
     dateEnd: Date.parse(formData.get(`event-end-time`)),
-    offers: [],
   };
 };
 
@@ -229,6 +238,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._resetHandler = null;
     this._eventType = this._event.eventType;
     this._eventDestination = this._event.destination;
+    this._availableOffers = availableOffers(OFFERS, this._eventType).offers;
+    this._eventOffers = this._event.offers;
     this._deleteButtonClickHandler = null;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
@@ -236,10 +247,11 @@ export default class EventEdit extends AbstractSmartComponent {
     this._favoritesHandler();
     this._changeType();
     this._changeDestination();
+    this._changeOffers();
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, {favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination});
+    return createEventEditTemplate(this._event, {offers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers});
   }
 
   removeElement() {
@@ -260,6 +272,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._favoritesHandler();
     this._changeType();
     this._changeDestination();
+    this._changeOffers();
   }
 
   rerender() {
@@ -302,13 +315,16 @@ export default class EventEdit extends AbstractSmartComponent {
   save() {
     this._event.favorite = this._favorite;
     this._event.eventType = this._eventType;
+    this._event.destination = this._eventDestination;
+    this._event.offers = this._eventOffers;
     this.rerender();
   }
+
 
   getData() {
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
-    return parseFormData(formData);
+    return Object.assign({offers: this._eventOffers}, parseFormData(formData));
   }
 
   setDeleteButtonClickHandler(handler) {
@@ -348,18 +364,50 @@ export default class EventEdit extends AbstractSmartComponent {
       }
       evt.target.checked = true;
       this._eventType = evt.target.value;
-      this._event.eventType = evt.target.value;
+      this._availableOffers = availableOffers(OFFERS, this._eventType).offers;
+      this._eventOffers = [];
       this.rerender();
     });
   }
 
   _changeDestination() {
-    const destinationList = this.getElement().querySelector(`#event-destination-1`);
+    const destinationsList = this.getElement().querySelector(`#event-destination-1`);
 
-    destinationList.addEventListener(`change`, (evt) => {
+    destinationsList.addEventListener(`change`, (evt) => {
       this._eventDestination = evt.target.value;
-      this._event.destination = evt.target.value;
       this.rerender();
+    });
+  }
+
+  _changeOffers() {
+    const listOfOffers = this.getElement().querySelectorAll(`.event__offer-checkbox`);
+    listOfOffers.forEach((it) => {
+      it.addEventListener(`change`, (evt) => {
+        if (evt.target.checked) {
+          this._eventOffers.push(
+              this._availableOffers.find((that) => {
+                if (evt.target.ariaLabel === that.title) {
+                  return true;
+                } else {
+                  return false;
+                }
+              })
+          );
+        } else {
+          const unCheckedOffer = this._eventOffers.find((that) => {
+            if (evt.target.ariaLabel === that.title) {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          const index = this._eventOffers.indexOf(unCheckedOffer);
+          if (index > -1) {
+            this._eventOffers.splice(index, 1);
+          }
+        }
+        this.rerender();
+      });
     });
   }
 }

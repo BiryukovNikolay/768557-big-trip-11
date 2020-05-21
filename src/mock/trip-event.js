@@ -15,15 +15,21 @@ const getRandomDate = (date, isOneEvent) => {
   return targetDate;
 };
 
-const generateOffers = (offerNames, eventType) => {
-
-  const offersOfType = offerNames.find((it) => {
-    if (it.type === eventType) {
+export const availableOffers = (offerNames, eventType) => {
+  const toUpperCaseTitle = (str) => {
+    return str[0].toUpperCase() + str.slice(1);
+  };
+  return offerNames.find((it) => {
+    if (it.type === toUpperCaseTitle(eventType)) {
       return true;
     } else {
       return false;
     }
   });
+};
+
+const generateOffers = (offerNames, eventType) => {
+  const offersOfType = availableOffers(offerNames, eventType);
 
   const maxCount = offersOfType.offers.length - 1;
   return offersOfType.offers.slice(Math.floor(Math.random() * maxCount), Math.floor(Math.random() * maxCount));
