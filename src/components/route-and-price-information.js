@@ -25,7 +25,10 @@ const createRouteAndPriceInformationTemplate = (eventsList) => {
 
     route = `${startLocation} &mdash;${events.length > 3 ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}`;
     date = `${startDate}&nbsp;&mdash;&nbsp;${endMonth === startMonth ? `${endDay}` : `${endDate}`}`;
-    fullPrice = events.reduce((acc, it) => acc + it.priceValue, 0);
+
+    fullPrice = events.reduce((acc, it) => {
+      return acc + it.priceValue;
+    }, 0);
   }
 
   return (
