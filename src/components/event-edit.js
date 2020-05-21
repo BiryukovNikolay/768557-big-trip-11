@@ -142,6 +142,7 @@ const createEventEditTemplate = (event, options = {}) => {
   const dayEnd = formatDate(dateEnd);
   const timeEnd = formatTime(dateEnd);
   const isNewEvent = newEvent ? `` : `${createEditoMarkup(favorite)}`;
+  const isDeleteBtn = newEvent ? `Cancel` : `Delete`;
   return (
     `<li class="trip-events__item trip-form">
       <form class="event trip-events__item  event  event--edit" action="#" method="post">
@@ -197,7 +198,7 @@ const createEventEditTemplate = (event, options = {}) => {
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-              <button class="event__reset-btn" type="reset">Delete</button>
+              <button class="event__reset-btn" type="reset">${isDeleteBtn}</button>
               ${isNewEvent}
               
             </header>

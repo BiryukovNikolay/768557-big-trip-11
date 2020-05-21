@@ -1,6 +1,6 @@
 import {getRandomInteger, getRandomArrayItem} from "../utils/random.js";
 import {formatISO} from "../utils/date.js";
-import {EVENT_TYPES, DESTINATIONS, OFFER_NAMES} from "../const";
+import {EVENT_TYPES, DESTINATIONS, OFFERS} from "../const";
 
 const diffValue = (isOneEvent, maxValue) => {
   const sign = Math.random() > 0.5 ? 1 : -1;
@@ -15,19 +15,30 @@ const getRandomDate = (date, isOneEvent) => {
   return targetDate;
 };
 
-const generateOffers = (offerNames) => {
-  return offerNames.slice(Math.floor(Math.random() * 10), Math.floor(Math.random() * 10));
+const generateOffers = (offerNames, eventType) => {
+
+  const offersOfType = offerNames.find((it) => {
+    if (it.type === eventType) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  const maxCount = offersOfType.offers.length - 1;
+  return offersOfType.offers.slice(Math.floor(Math.random() * maxCount), Math.floor(Math.random() * maxCount));
 };
 
 const generateEvent = () => {
+  const eventType = getRandomArrayItem(EVENT_TYPES);
   return {
     id: String(new Date() + Math.random()),
-    eventType: getRandomArrayItem(EVENT_TYPES),
+    eventType,
     destination: getRandomArrayItem(DESTINATIONS),
     priceValue: Math.floor(Math.random() * 100),
     dateStart: formatISO(getRandomDate(new Date(), false)),
     dateEnd: formatISO(getRandomDate(new Date(), true)),
-    offers: generateOffers(OFFER_NAMES),
+    offers: generateOffers(OFFERS, eventType),
     favorite: false
   };
 };
