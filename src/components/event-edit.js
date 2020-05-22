@@ -248,6 +248,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._changeType();
     this._changeDestination();
     this._changeOffers();
+    this._changePrice();
   }
 
   getTemplate() {
@@ -273,6 +274,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._changeType();
     this._changeDestination();
     this._changeOffers();
+    this._changePrice();
   }
 
   rerender() {
@@ -370,8 +372,26 @@ export default class EventEdit extends AbstractSmartComponent {
     });
   }
 
+  _changePrice() {
+    const priceInput = this.getElement().querySelector(`.event__input--price`);
+
+    priceInput.addEventListener(`focus`, (evt) => {
+      if (evt.target.value === `0`) {
+        evt.target.value = ``;
+      }
+    });
+
+    priceInput.addEventListener(`input`, (evt) => {
+      evt.target.value = evt.target.value.replace(/[^\d]/g, ``);
+    });
+  }
+
   _changeDestination() {
     const destinationsList = this.getElement().querySelector(`#event-destination-1`);
+
+    destinationsList.addEventListener(`input`, (evt) => {
+      evt.target.value = evt.target.value.replace(/[-\.;":'a-zA-Zа-яА-Я1-9]/g, ``);
+    });
 
     destinationsList.addEventListener(`change`, (evt) => {
       this._eventDestination = evt.target.value;
