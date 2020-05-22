@@ -13,11 +13,7 @@ const createOfferMarkup = (offers, checkedOffers) => {
     const {price, title} = it;
     const titleForAttribute = title.toLowerCase().replace(/ /g, `-`);
     const checkedOffer = checkedOffers.find((that) => {
-      if (that === it) {
-        return true;
-      } else {
-        return false;
-      }
+      return that === it;
     });
 
     return (
@@ -132,11 +128,7 @@ const destinationList = generateDestinationList();
 
 const typeOfDestination = (destination) => {
   return destinationList.find((it) => {
-    if (it.name === destination) {
-      return true;
-    } else {
-      return false;
-    }
+    return it.name === destination;
   });
 };
 
@@ -388,14 +380,15 @@ export default class EventEdit extends AbstractSmartComponent {
 
   _changeDestination() {
     const destinationsList = this.getElement().querySelector(`#event-destination-1`);
-
-    destinationsList.addEventListener(`input`, (evt) => {
-      evt.target.value = evt.target.value.replace(/[-\.;":'a-zA-Zа-яА-Я1-9]/g, ``);
-    });
-
     destinationsList.addEventListener(`change`, (evt) => {
-      this._eventDestination = evt.target.value;
-      this.rerender();
+      if (!DESTINATIONS.some((it) => {
+        return it === evt.target.value;
+      }) || !evt.target.value) {
+        destinationsList.setCustomValidity(`Сhoose an option from the list`);
+      } else {
+        this._eventDestination = evt.target.value;
+        this.rerender();
+      }
     });
   }
 
@@ -406,20 +399,12 @@ export default class EventEdit extends AbstractSmartComponent {
         if (evt.target.checked) {
           this._eventOffers.push(
               this._availableOffers.find((that) => {
-                if (evt.target.ariaLabel === that.title) {
-                  return true;
-                } else {
-                  return false;
-                }
+                return evt.target.ariaLabel === that.title;
               })
           );
         } else {
           const unCheckedOffer = this._eventOffers.find((that) => {
-            if (evt.target.ariaLabel === that.title) {
-              return true;
-            } else {
-              return false;
-            }
+            return evt.target.ariaLabel === that.title;
           });
           const index = this._eventOffers.indexOf(unCheckedOffer);
           if (index > -1) {
