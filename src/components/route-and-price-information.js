@@ -26,8 +26,18 @@ const createRouteAndPriceInformationTemplate = (eventsList) => {
     route = `${startLocation} &mdash;${events.length > 3 ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}`;
     date = `${startDate}&nbsp;&mdash;&nbsp;${endMonth === startMonth ? `${endDay}` : `${endDate}`}`;
 
+    const getTotalPriceOfOffer = (offers) => {
+      if (offers.length > 0) {
+        return offers.reduce((acc, it) => {
+          return acc + it.price;
+        }, 0);
+      } else {
+        return 0;
+      }
+    };
+
     fullPrice = events.reduce((acc, it) => {
-      return acc + it.priceValue;
+      return acc + it.priceValue + getTotalPriceOfOffer(it.offers);
     }, 0);
   }
 
