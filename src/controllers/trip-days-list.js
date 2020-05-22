@@ -71,6 +71,16 @@ export default class DaysListController {
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  hide() {
+    this._sortComponent.hide();
+    this._daysList.hide();
+  }
+
+  show() {
+    this._sortComponent.show();
+    this._daysList.show();
+  }
+
   render() {
     const events = this._eventsModel.getEvents();
     if (events.length === 0) {

@@ -406,7 +406,6 @@ export default class EventEdit extends AbstractSmartComponent {
             this._eventOffers.splice(index, 1);
           }
         }
-        this.rerender();
       });
     });
   }

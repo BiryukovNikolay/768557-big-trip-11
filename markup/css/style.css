@@ -61,6 +61,12 @@ main {
     width: 2px;
     background-color: rgba(255, 255, 255, 0.58); }
 
+
+  .page-body__container--stat::after {
+    display: none;
+    background: inherit;
+  }
+
 .page-body__page-main {
   -ms-flex-positive: 1;
       flex-grow: 1;
@@ -925,6 +931,7 @@ main {
     margin-right: 5px; }
 
 .statistics {
+  background-color: #f2f2f2;
   padding-top: 47px;
   padding-left: 37px; }
 

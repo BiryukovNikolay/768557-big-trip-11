@@ -14,6 +14,13 @@ export const formatDuration = (dateStart, dateEnd) => {
   return ``;
 };
 
+export const formatDurationStat = (dur) => {
+  if (momentDurationFormatSetup) {
+    return moment.duration(dur, `milliseconds`).format(`d[D] h[H] m[M]`);
+  }
+  return ``;
+};
+
 export const formatTime = (date) => {
   return moment(date).format(`hh:mm`);
 };
