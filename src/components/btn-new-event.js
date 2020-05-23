@@ -14,8 +14,6 @@ export default class BtnNewEvent extends AbstractSmartComponent {
   }
 
   setClickHandler(handler) {
-    this.getElement().addEventListener(`click`, () => {
-      handler();
-    });
+    this.getElement().addEventListener(`click`, handler);
   }
 }

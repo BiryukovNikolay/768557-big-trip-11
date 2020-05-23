@@ -94,6 +94,19 @@ export default class DaysListController {
     this._getDefaultDaylist(events);
   }
 
+  createEvents() {
+    if (this._creatingEvent) {
+      return;
+    }
+    this._showedEventControllers.forEach((it) => {
+      it.setDefaultView();
+    });
+    const eventListElement = this._daysList.getElement();
+    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
+  }
+
+
   _removeEvents() {
     remove(this._daysList);
     this._showedEventControllers.forEach((eventController) => eventController.destroy());
@@ -119,19 +132,6 @@ export default class DaysListController {
       pointCount++;
     });
   }
-
-  createEvents() {
-    if (this._creatingEvent) {
-      return;
-    }
-    this._showedEventControllers.forEach((it) => {
-      it.setDefaultView();
-    });
-    const eventListElement = this._daysList.getElement();
-    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange);
-    this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
-  }
-
 
   _onViewChange() {
     this._showedEventControllers.forEach((it) => it.setDefaultView());

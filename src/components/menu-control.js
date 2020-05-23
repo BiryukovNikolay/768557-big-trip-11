@@ -19,25 +19,11 @@ export default class MenuControl extends AbstractComponent {
     return createMenuControlTemplate();
   }
 
-  setActiveItem(menuItem) {
-    const item = this.getElement().querySelectorAll(`.trip-tabs__btn`);
-    const textMenu = item.map((it) => {
-      return it.textContent;
-    });
-
-    const activeIndex = textMenu.indexOf(menuItem);
-
-    if (item[activeIndex]) {
-      item[activeIndex].active = true;
-    }
-  }
-
   setOnChange(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       if (evt.target.tagName !== `A`) {
         return;
       }
-
       const menuItem = evt.target.textContent;
 
       handler(menuItem);
