@@ -9,6 +9,8 @@ export const Mode = {
 };
 
 export const EmptyEvent = {
+  id: String(new Date() + Math.random()),
+  favorite: false,
   eventType: `bus`,
   destination: ``,
   priceValue: `0`,
@@ -35,8 +37,8 @@ export default class EventController {
   }
 
   render(event, mode) {
-    const oldEventComponent = this._taskComponent;
-    const oldEventEditComponent = this._taskEditComponent;
+    const oldEventComponent = this._eventComponent;
+    const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
     this.event = event;
 
@@ -53,7 +55,6 @@ export default class EventController {
         if (oldEventComponent && oldEventEditComponent) {
           replace(this._eventComponent, oldEventComponent);
           replace(this._eventEditComponent, oldEventEditComponent);
-          this._replaceEditToTask();
         } else {
           render(this._container, this._eventComponent);
         }

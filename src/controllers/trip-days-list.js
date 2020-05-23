@@ -17,21 +17,21 @@ const renderEvent = (eventListElement, event, onDataChange, onViewChange) => {
 };
 
 const getSortedEvents = (events, sortType) => {
-  let sortedTasks = [];
-  const showingTasks = events.slice();
+  let sortedEvents = [];
+  const showingEvents = events.slice();
 
   switch (sortType) {
     case SortType.PRICE_UP:
-      sortedTasks = showingTasks.sort((a, b) => b.priceValue - a.priceValue);
+      sortedEvents = showingEvents.sort((a, b) => b.priceValue - a.priceValue);
       break;
     case SortType.DURATION_UP:
-      sortedTasks = showingTasks.sort((a, b) => duration(b.dateStart, b.dateEnd) - duration(a.dateStart, a.dateEnd));
+      sortedEvents = showingEvents.sort((a, b) => duration(b.dateStart, b.dateEnd) - duration(a.dateStart, a.dateEnd));
       break;
     case SortType.DEFAULT:
-      sortedTasks = showingTasks;
+      sortedEvents = showingEvents;
       break;
   }
-  return sortedTasks;
+  return sortedEvents;
 };
 
 const getDayEventsList = (events) => {
@@ -127,8 +127,8 @@ export default class DaysListController {
     this._showedEventControllers.forEach((it) => {
       it.setDefaultView();
     });
-    const taskListElement = this._daysList.getElement();
-    this._creatingEvent = new EventController(taskListElement, this._onDataChange, this._onViewChange);
+    const eventListElement = this._daysList.getElement();
+    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
   }
 
