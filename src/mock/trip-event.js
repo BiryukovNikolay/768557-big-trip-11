@@ -20,11 +20,7 @@ export const availableOffers = (offerNames, eventType) => {
     return str[0].toUpperCase() + str.slice(1);
   };
   return offerNames.find((it) => {
-    if (it.type === toUpperCaseTitle(eventType)) {
-      return true;
-    } else {
-      return false;
-    }
+    return it.type === toUpperCaseTitle(eventType);
   });
 };
 

@@ -38,9 +38,7 @@ headerController.render();
 const daysListController = new DaysListController(tripPageElement.getElement(), eventsModel);
 daysListController.render();
 
-btnNewEvent.setClickHandler(() => {
-  daysListController.createEvents();
-});
+btnNewEvent.setClickHandler(daysListController.onCreateEvents);
 
 const statisticsComponent = new StatisticsComponent({events: eventsModel});
 render(bodyContainer, statisticsComponent);

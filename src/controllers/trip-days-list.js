@@ -17,21 +17,18 @@ const renderEvent = (eventListElement, event, onDataChange, onViewChange) => {
 };
 
 const getSortedEvents = (events, sortType) => {
-  let sortedEvents = [];
   const showingEvents = events.slice();
 
   switch (sortType) {
     case SortType.PRICE_UP:
-      sortedEvents = showingEvents.sort((a, b) => b.priceValue - a.priceValue);
-      break;
+      return showingEvents.sort((a, b) => b.priceValue - a.priceValue);
     case SortType.DURATION_UP:
-      sortedEvents = showingEvents.sort((a, b) => duration(b.dateStart, b.dateEnd) - duration(a.dateStart, a.dateEnd));
-      break;
+      return showingEvents.sort((a, b) => duration(b.dateStart, b.dateEnd) - duration(a.dateStart, a.dateEnd));
     case SortType.DEFAULT:
-      sortedEvents = showingEvents;
-      break;
+      return showingEvents;
   }
-  return sortedEvents;
+
+  return showingEvents;
 };
 
 const getDayEventsList = (events) => {
@@ -66,6 +63,7 @@ export default class DaysListController {
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this.onCreateEvents = this.onCreateEvents.bind(this);
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
@@ -94,10 +92,11 @@ export default class DaysListController {
     this._getDefaultDaylist(events);
   }
 
-  createEvents() {
+  onCreateEvents() {
     if (this._creatingEvent) {
       return;
     }
+
     this._showedEventControllers.forEach((it) => {
       it.setDefaultView();
     });

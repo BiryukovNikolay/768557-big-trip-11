@@ -30,7 +30,7 @@ export default class Events {
       return false;
     }
 
-    this._events = [].concat(this._events.slice(0, index), this._events.slice(index + 1));
+    this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
 
     this._callHandlers(this._dataChangeHandlers);
 
@@ -38,7 +38,7 @@ export default class Events {
   }
 
   addEvent(event) {
-    this._events = [].concat(event, this._events);
+    this._events = [event, ...this._events];
     this._callHandlers(this._dataChangeHandlers);
   }
 
@@ -49,7 +49,7 @@ export default class Events {
       return false;
     }
 
-    this._events = [].concat(this._events.slice(0, index), events, this._events.slice(index + 1));
+    this._events = [...this._events.slice(0, index), events, ...this._events.slice(index + 1)];
 
     this._callHandlers(this._dataChangeHandlers);
 

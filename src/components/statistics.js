@@ -7,11 +7,7 @@ import {duration, formatDurationStat} from "../utils/date.js";
 const findTrnsportEvents = (events, typeOfEvents) => {
   return events.filter((it) => {
     return typeOfEvents.some((that) => {
-      if (it.eventType === that) {
-        return true;
-      } else {
-        return false;
-      }
+      return it.eventType === that;
     });
   });
 };
@@ -55,13 +51,9 @@ const createStatisticsTemplate = () => {
 const renderMoneyChart = (events, moneyCtx) => {
   const quantityOfActivity = groupEvent(events, EVENT_TYPES);
   const getTotalPrice = (arr) => {
-    if (arr.length > 0) {
-      return arr.reduce((acc, that) => {
-        return acc + that.priceValue;
-      }, 0);
-    } else {
-      return 0;
-    }
+    return arr.reduce((acc, that) => {
+      return acc + that.priceValue;
+    }, 0);
   };
 
   const getTitle = (arr) => {
@@ -241,13 +233,9 @@ const renderTimeSpendChart = (events, timeSpendCtx) => {
   const quantityEvents = groupEvent(events, EVENT_TYPES);
 
   const getTotalDuration = (arr) => {
-    if (arr.length > 0) {
-      return arr.reduce((acc, that) => {
-        return acc + duration(that.dateStart, that.dateEnd);
-      }, 0);
-    } else {
-      return 0;
-    }
+    return arr.reduce((acc, that) => {
+      return acc + duration(that.dateStart, that.dateEnd);
+    }, 0);
   };
 
   const getTitle = (arr) => {
