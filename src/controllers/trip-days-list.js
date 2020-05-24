@@ -3,35 +3,32 @@ import TripDayComponent from "../components/trip-day.js";
 import DaysListComponent from "../components/trip-days-list.js";
 import SortComponent from "../components/sort.js";
 import NoEventsComponent from "../components/no-event.js";
-import {render} from "../utils/render.js";
+import {render, remove} from "../utils/render.js";
 import {formatDayMonth, duration} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
-import EventController from "./event.js";
+import EventController, {Mode as EventControllerMode, EmptyEvent} from "./event.js";
 
 const renderEvent = (eventListElement, event, onDataChange, onViewChange) => {
   const eventController = new EventController(eventListElement, onDataChange, onViewChange);
 
-  eventController.render(event);
+  eventController.render(event, EventControllerMode.DEFAULT);
 
   return eventController;
 };
 
 const getSortedEvents = (events, sortType) => {
-  let sortedTasks = [];
-  const showingTasks = events.slice();
+  const showingEvents = events.slice();
 
   switch (sortType) {
     case SortType.PRICE_UP:
-      sortedTasks = showingTasks.sort((a, b) => b.priceValue - a.priceValue);
-      break;
+      return showingEvents.sort((a, b) => b.priceValue - a.priceValue);
     case SortType.DURATION_UP:
-      sortedTasks = showingTasks.sort((a, b) => duration(b.dateStart, b.dateEnd) - duration(a.dateStart, a.dateEnd));
-      break;
+      return showingEvents.sort((a, b) => duration(b.dateStart, b.dateEnd) - duration(a.dateStart, a.dateEnd));
     case SortType.DEFAULT:
-      sortedTasks = showingTasks;
-      break;
+      return showingEvents;
   }
-  return sortedTasks;
+
+  return showingEvents;
 };
 
 const getDayEventsList = (events) => {
@@ -46,27 +43,45 @@ const getDayEventsList = (events) => {
   return dayEventList;
 };
 
-export default class DaysListController {
-  constructor(container) {
 
-    this._events = [];
+export default class DaysListController {
+  constructor(container, eventsModel) {
+
+    this._container = container;
+    this._eventsModel = eventsModel;
+
     this._showedEventControllers = [];
     this._container = container;
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._eventList = new EventListComponent();
     this._daysList = new DaysListComponent();
+    this._creatingEvent = null;
 
+
+    this._onFilterChange = this._onFilterChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this.onCreateEvents = this.onCreateEvents.bind(this);
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+    this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
-  render(events) {
-    this._events = events;
-    if (this._events.length === 0) {
+  hide() {
+    this._sortComponent.hide();
+    this._daysList.hide();
+  }
+
+  show() {
+    this._sortComponent.show();
+    this._daysList.show();
+  }
+
+  render() {
+    const events = this._eventsModel.getEvents();
+    if (events.length === 0) {
       render(this._container, this._noEventsComponent);
       return;
     }
@@ -74,12 +89,33 @@ export default class DaysListController {
     render(this._container, this._sortComponent);
     render(this._container, this._daysList);
 
-    this._getDefaultDaylist(this._events);
+    this._getDefaultDaylist(events);
+  }
+
+  onCreateEvents() {
+    if (this._creatingEvent) {
+      return;
+    }
+
+    this._showedEventControllers.forEach((it) => {
+      it.setDefaultView();
+    });
+    const eventListElement = this._daysList.getElement();
+    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
+  }
+
+
+  _removeEvents() {
+    remove(this._daysList);
+    this._showedEventControllers.forEach((eventController) => eventController.destroy());
+    this._showedEventControllers = [];
   }
 
   _getDefaultDaylist(eventsList) {
     const daysListElement = this._container.querySelector(`.trip-days`);
-    const dayEventsList = getDayEventsList(eventsList);
+    const dayEventsList = getDayEventsList(eventsList.sort((a, b) => a.dateStart - b.dateStart));
+
     let pointCount = 1;
     dayEventsList.forEach((eventPoint, day) => {
       const dayEventList = new TripDayComponent(day, pointCount);
@@ -101,13 +137,16 @@ export default class DaysListController {
   }
 
   _onSortTypeChange(type) {
+    this._creatingEvent = null;
+    const events = this._eventsModel.getEvents();
     if (type === SortType.DEFAULT) {
       this._daysList.getElement().innerHTML = ``;
-      this._getDefaultDaylist(this._events);
+      this._getDefaultDaylist(events);
       return;
     }
 
-    const sortEvents = getSortedEvents(this._events, type);
+
+    const sortEvents = getSortedEvents(events, type);
     this._daysList.getElement().innerHTML = ``;
     const dayEventList = new TripDayComponent(``, ``);
     const eventList = new EventListComponent();
@@ -119,13 +158,41 @@ export default class DaysListController {
     });
   }
 
-  _onDataChange(oldData, newData) {
-    const index = this._events.findIndex((it) => it === oldData);
+  _updateEvents() {
+    this._removeEvents();
+    this.render();
+  }
 
-    if (index === -1) {
-      return;
+  _onFilterChange() {
+    this._creatingEvent = null;
+    this._updateEvents();
+  }
+
+  _onDataChange(oldData, newData) {
+    const eventController = this._showedEventControllers.find((it) => {
+      return oldData.id === it.getEvent().id;
+    });
+
+    if (oldData === EmptyEvent) {
+      if (newData === null) {
+        this._creatingEvent.destroy();
+        this._updateEvents();
+        this._creatingEvent = null;
+      } else {
+        this._eventsModel.addEvent(newData);
+        this._removeEvents();
+        this.render();
+        this._creatingEvent = null;
+      }
+
+    } else if (newData === null) {
+      this._eventsModel.removeEvent(oldData.id);
+      this._updateEvents();
+    } else {
+      const isSuccess = this._eventsModel.updateEvents(oldData.id, newData);
+      if (isSuccess) {
+        eventController.render(newData, EventControllerMode.DEFAULT);
+      }
     }
-    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
-    this._showedEventControllers[index].render(this._events[index]);
   }
 }

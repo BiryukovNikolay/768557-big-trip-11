@@ -14,12 +14,23 @@ export const formatDuration = (dateStart, dateEnd) => {
   return ``;
 };
 
+export const formatDurationStat = (dur) => {
+  if (momentDurationFormatSetup) {
+    return moment.duration(dur, `milliseconds`).format(`d[D] h[H] m[M]`);
+  }
+  return ``;
+};
+
 export const formatTime = (date) => {
   return moment(date).format(`hh:mm`);
 };
 
 export const formatDate = (date) => {
   return moment(date).format(`DD\MM\YY`);
+};
+
+export const formatISO = (date) => {
+  return moment(date).format();
 };
 
 export const formatDayMonth = (date) => {
@@ -36,4 +47,10 @@ export const formatMonth = (date) => {
 
 export const formatDay = (date) => {
   return moment(date).format(`D`);
+};
+
+export const dateDiff = (dateA, dateB) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+  return a.diff(b);
 };

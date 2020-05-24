@@ -1,7 +1,8 @@
 import {formatMonthDay, formatMonth, formatDay} from "../utils/date.js";
-import AbstractComponent from "./abstract-component.js";
+import AbstractComponent from "./abstract-smart-component.js";
 
-const createRouteAndPriceInformationTemplate = (events) => {
+const createRouteAndPriceInformationTemplate = (eventsList) => {
+  const events = eventsList.sort((a, b) => a.dateStart - b.dateStart);
   let route = ``;
   let date = ``;
   let fullPrice = `0`;
@@ -24,7 +25,16 @@ const createRouteAndPriceInformationTemplate = (events) => {
 
     route = `${startLocation} &mdash;${events.length > 3 ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}`;
     date = `${startDate}&nbsp;&mdash;&nbsp;${endMonth === startMonth ? `${endDay}` : `${endDate}`}`;
-    fullPrice = events.reduce((acc, it) => acc + it.priceValue, 0);
+
+    const getTotalPriceOfOffer = (offers) => {
+      return offers.reduce((acc, it) => {
+        return acc + it.price;
+      }, 0);
+    };
+
+    fullPrice = events.reduce((acc, it) => {
+      return acc + it.priceValue + getTotalPriceOfOffer(it.offers);
+    }, 0);
   }
 
   return (
@@ -45,7 +55,6 @@ export default class RouteAndPrice extends AbstractComponent {
     super();
     this._events = events;
   }
-
   getTemplate() {
     return createRouteAndPriceInformationTemplate(this._events);
   }

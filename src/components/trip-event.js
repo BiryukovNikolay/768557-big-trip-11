@@ -16,12 +16,11 @@ const createOfferMarkup = (offers) => {
 };
 
 const createOffersMarkup = (offers) => {
-  const offerMarkup = createOfferMarkup(offers);
   if (offers.length !== 0) {
     return (
       `<h4 class="visually-hidden">Offers:</h4>
        <ul class="event__selected-offers">
-         ${offerMarkup}
+         ${createOfferMarkup(offers)}
        </ul>
       `
     );
@@ -32,7 +31,6 @@ const createOffersMarkup = (offers) => {
 
 
 const createTripEventTemplate = (event) => {
-
   const {eventType, dateStart, dateEnd, destination, priceValue} = event;
   const typeIconName = `${eventType.toLowerCase()}.png`;
   const startTime = formatTime(dateStart);

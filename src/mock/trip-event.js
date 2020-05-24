@@ -1,41 +1,6 @@
 import {getRandomInteger, getRandomArrayItem} from "../utils/random.js";
-import {EVENT_TYPES, DESTINATION, OFFER_NAMES} from "../const";
-
-const DescriptionItem = [
-  `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
-  `Cras aliquet varius magna, non porta ligula feugiat eget.`,
-  `Fusce tristique felis at fermentum pharetra.`,
-  `Aliquam id orci ut lectus varius viverra.`,
-  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
-  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
-  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
-  `Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat.`,
-  `Nunc fermentum tortor ac porta dapibus.`,
-  `In rutrum ac purus sit amet tempus.`
-];
-
-const generateDescription = () => {
-  return getRandomArrayItem(DescriptionItem);
-};
-
-const getRandomNumderDescriptionBlock = (startInterval, endInterval) => {
-  return new Array(getRandomInteger(startInterval, endInterval))
-    .fill(``)
-    .map(generateDescription)
-    .join(``);
-};
-
-
-const generatePhotos = () => {
-  return (`<img class="event__photo" src="http://picsum.photos/248/152?r=${Math.random()}" alt="Event photo">`);
-};
-
-const getRundomNumberOfPhotos = (startInterval, endInterval) => {
-  return new Array(getRandomInteger(startInterval, endInterval))
-    .fill(``)
-    .map(generatePhotos)
-    .join(``);
-};
+import {formatISO} from "../utils/date.js";
+import {EVENT_TYPES, DESTINATIONS, OFFERS} from "../const";
 
 const diffValue = (isOneEvent, maxValue) => {
   const sign = Math.random() > 0.5 ? 1 : -1;
@@ -50,20 +15,32 @@ const getRandomDate = (date, isOneEvent) => {
   return targetDate;
 };
 
-const generateOffers = (offerNames) => {
-  return offerNames.slice(Math.floor(Math.random() * 10), Math.floor(Math.random() * 10));
+export const availableOffers = (offerNames, eventType) => {
+  const toUpperCaseTitle = (str) => {
+    return str[0].toUpperCase() + str.slice(1);
+  };
+  return offerNames.find((it) => {
+    return it.type === toUpperCaseTitle(eventType);
+  });
+};
+
+const generateOffers = (offerNames, eventType) => {
+  const offersOfType = availableOffers(offerNames, eventType);
+
+  const maxCount = offersOfType.offers.length - 1;
+  return offersOfType.offers.slice(Math.floor(Math.random() * maxCount), Math.floor(Math.random() * maxCount));
 };
 
 const generateEvent = () => {
+  const eventType = getRandomArrayItem(EVENT_TYPES);
   return {
-    eventType: getRandomArrayItem(EVENT_TYPES),
-    destination: getRandomArrayItem(DESTINATION),
+    id: String(new Date() + Math.random()),
+    eventType,
+    destination: getRandomArrayItem(DESTINATIONS),
     priceValue: Math.floor(Math.random() * 100),
-    description: getRandomNumderDescriptionBlock(1, 5),
-    dateStart: getRandomDate(new Date(), false),
-    dateEnd: getRandomDate(new Date(), true),
-    photo: getRundomNumberOfPhotos(1, 5),
-    offers: generateOffers(OFFER_NAMES),
+    dateStart: formatISO(getRandomDate(new Date(), false)),
+    dateEnd: formatISO(getRandomDate(new Date(), true)),
+    offers: generateOffers(OFFERS, eventType),
     favorite: false
   };
 };
@@ -71,8 +48,7 @@ const generateEvent = () => {
 const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
-    .map(generateEvent)
-    .sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime());
+    .map(generateEvent);
 };
 
 export {generateEvents};
