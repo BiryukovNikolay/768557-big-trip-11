@@ -1,4 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import EventModel from "../models/event.js";
 import {formatDate, formatTime} from "../utils/date.js";
 import flatpickr from "flatpickr";
 
@@ -229,11 +230,11 @@ const createEventEditTemplate = (event, options = {}) => {
 
 const parseFormData = (formData) => {
   return {
-    eventType: formData.get(`event-type`),
-    destination: formData.get(`event-destination`),
-    priceValue: +formData.get(`event-price`),
-    dateStart: Date.parse(formData.get(`event-start-time`)),
-    dateEnd: Date.parse(formData.get(`event-end-time`)),
+    "type": formData.get(`event-type`),
+    "destination": {name: formData.get(`event-destination`)},
+    "base_price": +formData.get(`event-price`),
+    "date_from": Date.parse(formData.get(`event-start-time`)),
+    "date_to": Date.parse(formData.get(`event-end-time`)),
   };
 };
 
@@ -340,7 +341,9 @@ export default class EventEdit extends AbstractSmartComponent {
   getData() {
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
-    return Object.assign({offers: this._eventOffers, photo: this._photo}, parseFormData(formData));
+    const parsedData = parseFormData(formData);
+    parsedData.destination = Object.assign({"description": this._description, "pictures": this._photo}, parsedData.destination);
+    return new EventModel(Object.assign({"id": this._event.id, "offers": this._eventOffers}, parsedData));
   }
 
   setDeleteButtonClickHandler(handler) {

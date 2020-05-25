@@ -16,6 +16,21 @@ export default class Event {
     this.eventType = data[`type`];
   }
 
+  toRAW() {
+    return {
+      "id": this.id,
+      "destination": {name: this.destination, description: this.description, pictures: this.photo},
+      "date_from": this.dateStart,
+      "date_to": this.dateEnd,
+      "base_price": this.priceValue,
+      "is_favorite": this.favorite,
+      "is_archived": this.isArchive,
+      "offers": this.offers,
+      "type": this.eventType
+    };
+  }
+
+
   static parseEvent(data) {
     return new Event(data);
   }

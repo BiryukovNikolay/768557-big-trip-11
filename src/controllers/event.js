@@ -21,6 +21,7 @@ export const EmptyEvent = {
   newEvent: true,
 };
 
+
 export default class EventController {
   constructor(container, onDataChange, onViewChange, destinations, offers) {
     this._container = container;

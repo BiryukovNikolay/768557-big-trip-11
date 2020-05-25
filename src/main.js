@@ -26,7 +26,7 @@ const btnNewEvent = new BtnNewEventComponent();
 const bodyContainer = document.querySelector(`.page-body__page-main`);
 const tripPageElement = new TripPageComponent();
 const headerController = new RouteAndPriceController(tripMainElement, eventsModel);
-const daysListController = new DaysListController(tripPageElement.getElement(), eventsModel, destinationsModel, offersModel);
+const daysListController = new DaysListController(tripPageElement.getElement(), eventsModel, destinationsModel, offersModel, api);
 const statisticsComponent = new StatisticsComponent({events: eventsModel});
 
 
