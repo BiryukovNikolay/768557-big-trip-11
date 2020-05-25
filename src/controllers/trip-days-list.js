@@ -149,6 +149,8 @@ export default class DaysListController {
   }
 
   _onSortTypeChange(type) {
+    const destinstions = this._destinationsModel.getDestinations();
+    const offers = this._offersModel.getOffers();
     this._creatingEvent = null;
     const events = this._eventsModel.getEvents();
     if (type === SortType.DEFAULT) {
@@ -165,7 +167,7 @@ export default class DaysListController {
     render(this._daysList.getElement(), dayEventList);
     render(dayEventList.getElement(), eventList);
     sortEvents.forEach((it) => {
-      const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange);
+      const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange, destinstions, offers);
       this._showedEventControllers = this._showedEventControllers.concat(newEvents);
     });
   }
