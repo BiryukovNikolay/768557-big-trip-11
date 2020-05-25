@@ -2,6 +2,8 @@ import TripEventComponent from "../components/trip-event.js";
 import EventEditComponent from "../components/event-edit.js";
 import {render, replace, remove, RenderPosition} from "../utils/render.js";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
@@ -52,13 +54,22 @@ export default class EventController {
     this._eventEditComponent = new EventEditComponent(this.event, this._onDataChange, this._destinations, this._offers);
     this._eventEditComponent.setSubmitHandler(this._onEditFormSubmit);
     this._eventEditComponent.setResetHandler(this._onResetButton);
-    this._eventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(event, null));
+
+    this._eventEditComponent.setDeleteButtonClickHandler(() => {
+      this._eventEditComponent.setData({
+        deleteButtonText: `Deleting...`,
+        disableform: `disabled`,
+      });
+
+      this._onDataChange(event, null);
+    });
 
     switch (mode) {
       case Mode.DEFAULT:
         if (oldEventComponent && oldEventEditComponent) {
           replace(this._eventComponent, oldEventComponent);
           replace(this._eventEditComponent, oldEventEditComponent);
+          this._replaceEditToEvent();
         } else {
           render(this._container, this._eventComponent);
         }
@@ -88,6 +99,27 @@ export default class EventController {
     remove(this._eventEditComponent);
     remove(this._eventComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+  shake() {
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = `2px solid rgba(214, 15, 15, 0.5)`;
+
+
+    setTimeout(() => {
+      this._eventEditComponent.getElement().style.animation = ``;
+      this._eventComponent.getElement().style.animation = ``;
+
+      this._eventEditComponent.setData({
+        deleteButtonText: `Delete`,
+        saveButtonText: `Save`,
+        disableform: `disabled`,
+      });
+
+
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _replaceEventToEdit() {
@@ -129,14 +161,6 @@ export default class EventController {
     document.addEventListener(`keydown`, this._onEscKeyDown);
   }
 
-  _onDeleteButton(evt) {
-    evt.preventDefault();
-    this._eventEditComponent.reset();
-    this._destroy();
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
-  }
-
-
   _onResetButton(evt) {
     if (this._mode === Mode.ADDING) {
       this._onDataChange(EmptyEvent, null);
@@ -151,10 +175,14 @@ export default class EventController {
 
   _onEditFormSubmit(evt) {
     evt.preventDefault();
+    this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = ``;
     const data = this._eventEditComponent.getData();
-    this._onDataChange(this.event, data);
     this._eventEditComponent.save();
-    this._replaceEditToEvent();
+    this._eventEditComponent.setData({
+      saveButtonText: `Saving...`,
+      disableform: `disabled`,
+    });
+    this._onDataChange(this.event, data);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 }

@@ -12,9 +12,10 @@ import FilterController from "./controllers/filters.js";
 import {render} from "./utils/render.js";
 
 const AUTHORIZATION = `Basic t54e590ik29jg7r`;
+const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
 
-const api = new API(AUTHORIZATION);
+const api = new API(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
 const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
@@ -67,8 +68,7 @@ api.getOffers()
 api.getEvents()
    .then((events) => {
      eventsModel.setEvents(events);
-   })
-   .then(() => {
      daysListController.render();
    });
+
 

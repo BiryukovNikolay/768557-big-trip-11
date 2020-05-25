@@ -6,6 +6,12 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/material_blue.css";
 
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+  disableform: ``,
+};
+
 const availableOffers = (offerNames, eventType) => {
   return offerNames.find((it) => {
     return it.type === eventType;
@@ -157,7 +163,7 @@ const getTypes = (ar) => {
 
 const createEventEditTemplate = (event, options = {}) => {
   const {priceValue, dateStart, dateEnd, newEvent} = event;
-  const {offers, destinations, favorite, checkedOffers, eventType, destination, availableTypeOffers, description, photo} = options;
+  const {offers, destinations, favorite, checkedOffers, eventType, destination, availableTypeOffers, description, photo, externalData} = options;
   const types = getTypes(offers);
   const descriptionType = description ? description : ``;
   const typeIconName = `${eventType.toLowerCase()}.png`;
@@ -167,10 +173,14 @@ const createEventEditTemplate = (event, options = {}) => {
   const dayEnd = formatDate(dateEnd);
   const timeEnd = formatTime(dateEnd);
   const isNewEvent = newEvent ? `` : `${createEditoMarkup(favorite)}`;
-  const isDeleteBtn = newEvent ? `Cancel` : `Delete`;
+  const deleteButtonText = externalData.deleteButtonText;
+  const saveButtonText = externalData.saveButtonText;
+  const disableForm = externalData.disableform;
+
+  const isDeleteBtn = newEvent ? `Cancel` : deleteButtonText;
   return (
     `<li class="trip-events__item trip-form">
-      <form class="event trip-events__item  event  event--edit" action="#" method="post">
+      <form class="event trip-events__item  event  event--edit" action="#" method="post" disabled>
           <header class="event__header">
               <div class="event__type-wrapper">
                 <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -217,8 +227,8 @@ const createEventEditTemplate = (event, options = {}) => {
                 <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${priceValue}">
               </div>
 
-              <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-              <button class="event__reset-btn" type="reset">${isDeleteBtn}</button>
+              <button class="event__save-btn  btn  btn--blue" type="submit" ${disableForm}>${saveButtonText}</button>
+              <button class="event__reset-btn" type="reset" ${disableForm}>${isDeleteBtn}</button>
               ${isNewEvent}
               
             </header>
@@ -254,6 +264,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._eventDestination = this._event.destination;
     this._availableOffers = availableOffers(this._offers, this._eventType).offers;
     this._eventOffers = this._event.offers;
+    this._externalData = DefaultData;
     this._deleteButtonClickHandler = null;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
@@ -266,7 +277,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, {offers: this._offers, destinations: this._destinations, checkedOffers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers, description: this._description, photo: this._event.photo});
+    return createEventEditTemplate(this._event, {offers: this._offers, destinations: this._destinations, checkedOffers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers, description: this._description, photo: this._event.photo, externalData: this._externalData});
   }
 
   removeElement() {
@@ -294,32 +305,6 @@ export default class EventEdit extends AbstractSmartComponent {
   rerender() {
     super.rerender();
     this._applyFlatpickr();
-  }
-
-  _applyFlatpickr() {
-    if (this._flatpickrStart || this._flatpickrEnd) {
-      this._flatpickrStart.destroy();
-      this._flatpickrEnd.destroy();
-      this._flatpickrStart = null;
-      this._flatpickrEnd = null;
-    }
-
-    const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
-    this._flatpickrStart = flatpickr(dateElements[0], {
-      altInput: true,
-      allowInput: true,
-      altFormat: `d/m/Y`,
-      dateFormat: `Z`,
-      defaultDate: this._event.dateStart || `today`,
-    });
-
-    this._flatpickrEnd = flatpickr(dateElements[1], {
-      altInput: true,
-      allowInput: true,
-      altFormat: `d/m/Y`,
-      dateFormat: `Z`,
-      defaultDate: this._event.dateEnd || `today`,
-    });
   }
 
   reset() {
@@ -352,6 +337,11 @@ export default class EventEdit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = handler;
   }
 
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
+  }
+
   setSubmitHandler(handler) {
     this.getElement().querySelector(`.event--edit`).addEventListener(`submit`, handler);
     this._submitHandler = handler;
@@ -363,6 +353,32 @@ export default class EventEdit extends AbstractSmartComponent {
       rollupBtn.addEventListener(`click`, handler);
     }
     this._resetHandler = handler;
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickrStart || this._flatpickrEnd) {
+      this._flatpickrStart.destroy();
+      this._flatpickrEnd.destroy();
+      this._flatpickrStart = null;
+      this._flatpickrEnd = null;
+    }
+
+    const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
+    this._flatpickrStart = flatpickr(dateElements[0], {
+      altInput: true,
+      allowInput: true,
+      altFormat: `d/m/Y`,
+      dateFormat: `Z`,
+      defaultDate: this._event.dateStart || `today`,
+    });
+
+    this._flatpickrEnd = flatpickr(dateElements[1], {
+      altInput: true,
+      allowInput: true,
+      altFormat: `d/m/Y`,
+      dateFormat: `Z`,
+      defaultDate: this._event.dateEnd || `today`,
+    });
   }
 
   _favoritesHandler() {

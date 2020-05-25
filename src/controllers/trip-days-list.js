@@ -194,23 +194,35 @@ export default class DaysListController {
         this._updateEvents();
         this._creatingEvent = null;
       } else {
-        this._eventsModel.addEvent(newData);
-        this._removeEvents();
-        this.render();
-        this._creatingEvent = null;
+        this._api.createEvent(newData)
+           .then((eventsModel) => {
+             this._eventsModel.addEvent(eventsModel);
+             this._removeEvents();
+             this.render();
+             this._creatingEvent = null;
+           })
+           .catch(() => {
+             eventController.shake();
+           });
       }
-
     } else if (newData === null) {
-      this._eventsModel.removeEvent(oldData.id);
-      this._updateEvents();
+      this._api.deleteEvent(oldData.id)
+         .then(() => {
+           this._eventsModel.removeEvent(oldData.id);
+           this._updateEvents();
+         }).catch(() => {
+           eventController.shake();
+         });
     } else {
       this._api.updateEvent(oldData.id, newData)
          .then((eventModel) => {
            const isSuccess = this._eventsModel.updateEvents(oldData.id, eventModel);
-
            if (isSuccess) {
              eventController.render(eventModel, EventControllerMode.DEFAULT);
            }
+         })
+         .catch(() => {
+           eventController.shake();
          });
     }
   }
