@@ -8,8 +8,9 @@ import {formatDayMonth, duration} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
 import EventController, {Mode as EventControllerMode, EmptyEvent} from "./event.js";
 
-const renderEvent = (eventListElement, event, onDataChange, onViewChange) => {
-  const eventController = new EventController(eventListElement, onDataChange, onViewChange);
+const renderEvent = (eventListElement, event, onDataChange, onViewChange, destinations, offers) => {
+
+  const eventController = new EventController(eventListElement, onDataChange, onViewChange, destinations, offers);
 
   eventController.render(event, EventControllerMode.DEFAULT);
 
@@ -45,10 +46,12 @@ const getDayEventsList = (events) => {
 
 
 export default class DaysListController {
-  constructor(container, eventsModel) {
+  constructor(container, eventsModel, destinationsModel, offersModel) {
 
     this._container = container;
     this._eventsModel = eventsModel;
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
 
     this._showedEventControllers = [];
     this._container = container;
@@ -81,6 +84,10 @@ export default class DaysListController {
 
   render() {
     const events = this._eventsModel.getEvents();
+
+    const destinstions = this._destinationsModel.getDestinations();
+    const offers = this._offersModel.getOffers();
+
     if (events.length === 0) {
       render(this._container, this._noEventsComponent);
       return;
@@ -89,10 +96,13 @@ export default class DaysListController {
     render(this._container, this._sortComponent);
     render(this._container, this._daysList);
 
-    this._getDefaultDaylist(events);
+    this._getDefaultDaylist(events, destinstions, offers);
   }
 
   onCreateEvents() {
+    const destinstions = this._destinationsModel.getDestinations();
+    const offers = this._offersModel.getOffers();
+
     if (this._creatingEvent) {
       return;
     }
@@ -101,7 +111,7 @@ export default class DaysListController {
       it.setDefaultView();
     });
     const eventListElement = this._daysList.getElement();
-    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinstions, offers);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
   }
 
@@ -115,6 +125,8 @@ export default class DaysListController {
   _getDefaultDaylist(eventsList) {
     const daysListElement = this._container.querySelector(`.trip-days`);
     const dayEventsList = getDayEventsList(eventsList.sort((a, b) => a.dateStart - b.dateStart));
+    const destinstions = this._destinationsModel.getDestinations();
+    const offers = this._offersModel.getOffers();
 
     let pointCount = 1;
     dayEventsList.forEach((eventPoint, day) => {
@@ -122,7 +134,7 @@ export default class DaysListController {
       const eventList = new EventListComponent();
 
       eventPoint.forEach((it) => {
-        const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange);
+        const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange, destinstions, offers);
         this._showedEventControllers = this._showedEventControllers.concat(newEvents);
       });
 

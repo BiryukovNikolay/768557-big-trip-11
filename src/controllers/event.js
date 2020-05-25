@@ -17,14 +17,17 @@ export const EmptyEvent = {
   dateStart: new Date(),
   dateEnd: new Date(),
   offers: [],
+  photo: [],
   newEvent: true,
 };
 
 export default class EventController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, destinations, offers) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._destinations = destinations;
+    this._offers = offers;
     this._mode = Mode.DEFAULT;
 
     this._eventComponent = null;
@@ -42,10 +45,10 @@ export default class EventController {
     this._mode = mode;
     this.event = event;
 
-    this._eventComponent = new TripEventComponent(event);
+    this._eventComponent = new TripEventComponent(this.event);
     this._eventComponent.setRollupHandler(this._onEditButton);
 
-    this._eventEditComponent = new EventEditComponent(event, this._onDataChange);
+    this._eventEditComponent = new EventEditComponent(this.event, this._onDataChange, this._destinations, this._offers);
     this._eventEditComponent.setSubmitHandler(this._onEditFormSubmit);
     this._eventEditComponent.setResetHandler(this._onResetButton);
     this._eventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(event, null));

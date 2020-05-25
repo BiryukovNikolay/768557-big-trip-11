@@ -4,19 +4,21 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {TRANSFERS, EVENT_TYPES} from "../const";
 import {duration, formatDurationStat} from "../utils/date.js";
 
-const findTrnsportEvents = (events, typeOfEvents) => {
+const findTrasportEvents = (events, typeOfEvents) => {
   return events.filter((it) => {
     return typeOfEvents.some((that) => {
-      return it.eventType === that;
+      return it.eventType === that.toLowerCase();
     });
   });
 };
 
 const groupEvent = (events, typeOfEvents) => {
-  const transportEvents = findTrnsportEvents(events, typeOfEvents);
+  const transportEvents = findTrasportEvents(events, typeOfEvents);
+
   return typeOfEvents.map((it) => {
     return transportEvents.filter((that) => {
-      return it === that.eventType;
+
+      return it.toLowerCase() === that.eventType;
     });
   })
   .sort((a, b) => {
@@ -50,6 +52,7 @@ const createStatisticsTemplate = () => {
 
 const renderMoneyChart = (events, moneyCtx) => {
   const quantityOfActivity = groupEvent(events, EVENT_TYPES);
+
   const getTotalPrice = (arr) => {
     return arr.reduce((acc, that) => {
       return acc + that.priceValue;
@@ -66,6 +69,7 @@ const renderMoneyChart = (events, moneyCtx) => {
 
 
   const pricesOfType = quantityOfActivity.map((it) => {
+
     const totalPrice = getTotalPrice(it);
     const name = getTitle(it);
     return {
@@ -75,6 +79,7 @@ const renderMoneyChart = (events, moneyCtx) => {
   }).sort((a, b) => {
     return b.totalPrice - a.totalPrice;
   }).slice(0, 6);
+
 
   const moneyTitles = pricesOfType.map((it) => {
     return it.name;
@@ -155,7 +160,11 @@ const renderTransportChart = (events, transportCtx) => {
   const quantityOfTransport = groupEvent(events, TRANSFERS);
 
   const labelsName = quantityOfTransport.slice(0, 4).map((it) => {
-    return it[0].eventType;
+    if (it.length > 0) {
+      return it[0].eventType;
+    } else {
+      return ``;
+    }
   });
 
   const transportCounts = quantityOfTransport.slice(0, 4).map((it) => {
@@ -368,16 +377,15 @@ export default class Statistics extends AbstractSmartComponent {
 
   _renderCharts() {
     const element = this.getElement();
-
     this._resetCharts();
 
     const moneyCtx = element.querySelector(`.statistics__chart--money`);
     const timeSpendCtx = element.querySelector(`.statistics__chart--time`);
     const transportCtx = element.querySelector(`.statistics__chart--transport`);
 
-    this._moneyChart = renderMoneyChart(this._events.getEvents(), moneyCtx);
-    this._transportChart = renderTransportChart(this._events.getEvents(), transportCtx);
-    this._timeSpendChart = renderTimeSpendChart(this._events.getEvents(), timeSpendCtx);
+    this._moneyChart = renderMoneyChart(this._events.getEventsAll(), moneyCtx);
+    this._transportChart = renderTransportChart(this._events.getEventsAll(), transportCtx);
+    this._timeSpendChart = renderTimeSpendChart(this._events.getEventsAll(), timeSpendCtx);
   }
 
   _resetCharts() {

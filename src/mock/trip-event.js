@@ -15,15 +15,6 @@ const getRandomDate = (date, isOneEvent) => {
   return targetDate;
 };
 
-export const availableOffers = (offerNames, eventType) => {
-  const toUpperCaseTitle = (str) => {
-    return str[0].toUpperCase() + str.slice(1);
-  };
-  return offerNames.find((it) => {
-    return it.type === toUpperCaseTitle(eventType);
-  });
-};
-
 const generateOffers = (offerNames, eventType) => {
   const offersOfType = availableOffers(offerNames, eventType);
 

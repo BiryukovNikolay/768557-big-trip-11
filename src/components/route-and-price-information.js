@@ -2,7 +2,9 @@ import {formatMonthDay, formatMonth, formatDay} from "../utils/date.js";
 import AbstractComponent from "./abstract-smart-component.js";
 
 const createRouteAndPriceInformationTemplate = (eventsList) => {
+
   const events = eventsList.sort((a, b) => a.dateStart - b.dateStart);
+
   let route = ``;
   let date = ``;
   let fullPrice = `0`;
@@ -18,10 +20,10 @@ const createRouteAndPriceInformationTemplate = (eventsList) => {
 
     const startDate = formatMonthDay(startDay.dateStart);
     const startMonth = formatMonth(startDay.dateStart);
-    const endDate = formatMonthDay(lastDay.dateEnd);
-    const endMonth = formatMonth(startDay.dateEnd);
-    const endDay = formatDay(startDay.dateEnd);
 
+    const endDate = formatMonthDay(lastDay.dateEnd);
+    const endMonth = formatMonth(lastDay.dateEnd);
+    const endDay = formatDay(lastDay.dateEnd);
 
     route = `${startLocation} &mdash;${events.length > 3 ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}`;
     date = `${startDate}&nbsp;&mdash;&nbsp;${endMonth === startMonth ? `${endDay}` : `${endDate}`}`;
