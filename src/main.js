@@ -13,7 +13,7 @@ import RouteAndPriceController from "./controllers/header.js";
 import FilterController from "./controllers/filters.js";
 import {render} from "./utils/render.js";
 
-const AUTHORIZATION = `Basic t54e590rt29jg7r`;
+const AUTHORIZATION = `Basic t54e670rt29jg7r`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
@@ -78,7 +78,7 @@ apiWithProvider.getEvents()
    });
 
 window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
+  navigator.serviceWorker.register(`./sw.js`)
   .then(() => {
 
   }).catch(() => {
