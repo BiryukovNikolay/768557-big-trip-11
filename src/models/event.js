@@ -1,6 +1,4 @@
 const getParametr = (obj, key) => {
-  console.log(obj, key);
-  
   return obj[key];
 };
 
