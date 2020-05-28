@@ -4,6 +4,7 @@ const getParametr = (obj, key) => {
 
 export default class Event {
   constructor(data) {
+
     this.id = data[`id`];
     this.description = getParametr(data[`destination`], `description`);
     this.destination = getParametr(data[`destination`], `name`);
@@ -37,5 +38,9 @@ export default class Event {
 
   static parseEvents(data) {
     return data.map(Event.parseEvent);
+  }
+
+  static clone(data) {
+    return new Event(data.toRAW());
   }
 }

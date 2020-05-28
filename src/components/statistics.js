@@ -99,7 +99,8 @@ const renderMoneyChart = (events, moneyCtx) => {
         data: moneyPrices,
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
-        anchor: `start`
+        anchor: `start`,
+        img: `<img class="event__type-icon" width="17" height="17" src="img/icons/${moneyPrices}" alt="Event type icon">`
       }]
     },
     options: {

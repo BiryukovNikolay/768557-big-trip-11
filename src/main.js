@@ -1,4 +1,6 @@
-import API from "./api.js";
+import API from "./api/index.js";
+import Store from "./api/store.js";
+import Provider from "./api/provider.js";
 import EventsModel from "./models/trip-events.js";
 import DestinationsModel from "./models/destinations.js";
 import OffersModel from "./models/offers.js";
@@ -11,11 +13,15 @@ import RouteAndPriceController from "./controllers/header.js";
 import FilterController from "./controllers/filters.js";
 import {render} from "./utils/render.js";
 
-const AUTHORIZATION = `Basic t54e590ik29jg7r`;
+const AUTHORIZATION = `Basic t54e590rt29jg7r`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
-
+const STORE_PREFIX = `bigtrip-localstorage`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new API(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 const eventsModel = new EventsModel();
 const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
@@ -27,7 +33,7 @@ const btnNewEvent = new BtnNewEventComponent();
 const bodyContainer = document.querySelector(`.page-body__page-main`);
 const tripPageElement = new TripPageComponent();
 const headerController = new RouteAndPriceController(tripMainElement, eventsModel);
-const daysListController = new DaysListController(tripPageElement.getElement(), eventsModel, destinationsModel, offersModel, api);
+const daysListController = new DaysListController(tripPageElement.getElement(), eventsModel, destinationsModel, offersModel, apiWithProvider);
 const statisticsComponent = new StatisticsComponent({events: eventsModel});
 
 
@@ -55,20 +61,39 @@ siteMenuComponent.setOnChange((menuItem) => {
   }
 });
 
-api.getDestinations()
+apiWithProvider.getDestinations()
   .then((destinations) => {
     destinationsModel.setDestinations(destinations);
   });
 
-api.getOffers()
+apiWithProvider.getOffers()
   .then((offers) => {
     offersModel.setOffers(offers);
   });
 
-api.getEvents()
+apiWithProvider.getEvents()
    .then((events) => {
      eventsModel.setEvents(events);
      daysListController.render();
    });
 
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+  .then(() => {
+
+  }).catch(() => {
+
+  });
+});
+
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});
 
