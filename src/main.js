@@ -1,4 +1,4 @@
-import Api from "./api/index.js";
+import API from "./api/index.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 import EventsModel from "./models/trip-events.js";
@@ -20,7 +20,7 @@ const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
-const api = new Api(END_POINT, AUTHORIZATION);
+const api = new API(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 const eventsModel = new EventsModel();
