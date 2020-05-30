@@ -1,19 +1,33 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import EventModel from "../models/event.js";
 import {formatDate, formatTime} from "../utils/date.js";
-import {generateDestinationList} from "../mock/destination.js";
-import {availableOffers} from "../mock/trip-event.js";
-import {TRANSFERS, ACTIVITIES, DESTINATIONS, OFFERS} from "../const";
 import flatpickr from "flatpickr";
 
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/material_blue.css";
+
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+  disableform: ``,
+};
+
+const availableOffers = (offerNames, eventType) => {
+  if (offerNames.length !== 0) {
+    return offerNames.find((it) => {
+      return it.type === eventType;
+    }).offers;
+  } else {
+    return [];
+  }
+};
 
 const createOfferMarkup = (offers, checkedOffers) => {
   return offers.map((it) => {
     const {price, title} = it;
     const titleForAttribute = title.toLowerCase().replace(/ /g, `-`);
     const checkedOffer = checkedOffers.find((that) => {
-      return that === it;
+      return that.title === it.title;
     });
 
     return (
@@ -44,6 +58,24 @@ const createOfferBlock = (offers, checkedOffers) => {
   }
 };
 
+const createPhoto = (photos) => {
+  return photos.map((it) => {
+    return (
+      `<img class="event__photo" src="${it.src}" alt="${it.description}">`
+    );
+  }).join(`\n`);
+};
+
+const createPhotoMarkup = (photos) => {
+  return (
+    `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${createPhoto(photos)}
+      </div>
+    </div>`
+  );
+};
+
 const createSectionEventDetailsMarkup = (offers, description, photo, checkedOffers) => {
   const isDescription = description ? `${createDescriptionMarkup(description)}` : ``;
   const isPhoto = photo ? `${createPhotoMarkup(photo)}` : ``;
@@ -56,8 +88,7 @@ const createSectionEventDetailsMarkup = (offers, description, photo, checkedOffe
           ${isDescription}
           ${isPhoto}
           </section>
-      </section>
-      `
+      </section>`
     );
   } else {
     return ``;
@@ -86,7 +117,7 @@ const createTypeMarkup = (eventType, types) => {
 
 const createDestinationsMarkup = (destinations) => {
   return destinations.map((it) => {
-    return `<option value="${it}"></option>`;
+    return `<option value="${it.name}"></option>`;
   }).join(`\n`);
 };
 
@@ -94,16 +125,6 @@ const createDescriptionMarkup = (description) => {
   return (
     `<h3 class="event__section-title  event__section-title--destination">Destination</h3>
      <p class="event__destination-description">${description}</p>`
-  );
-};
-
-const createPhotoMarkup = (photo) => {
-  return (
-    `<div class="event__photos-container">
-      <div class="event__photos-tape">
-        ${photo}
-      </div>
-    </div>`
   );
 };
 
@@ -124,30 +145,46 @@ const createEditoMarkup = (favorite) => {
   );
 };
 
-const destinationList = generateDestinationList();
 
-const typeOfDestination = (destination) => {
+const getDescription = (destination, destinationList) => {
   return destinationList.find((it) => {
     return it.name === destination;
+  }).description;
+};
+
+const getPhotos = (destination, destinationList) => {
+  return destinationList.find((it) => {
+    return it.name === destination;
+  }).photo;
+};
+
+const getTypes = (ar) => {
+  return ar.map((it) => {
+    return it.type;
   });
 };
 
 
 const createEventEditTemplate = (event, options = {}) => {
-  const {photo, priceValue, dateStart, dateEnd, newEvent} = event;
-  const {favorite, offers, eventType, destination, availableTypeOffers} = options;
-  const {description} = typeOfDestination(destination) ? typeOfDestination(destination) : {description: ``};
+  const {priceValue, dateStart, dateEnd, newEvent} = event;
+  const {offers, destinations, favorite, checkedOffers, eventType, destination, availableTypeOffers, description, photo, externalData} = options;
+  const types = getTypes(offers);
+  const descriptionType = description ? description : ``;
   const typeIconName = `${eventType.toLowerCase()}.png`;
-  const eventDetails = createSectionEventDetailsMarkup(availableTypeOffers, description, photo, offers);
+  const eventDetails = createSectionEventDetailsMarkup(availableTypeOffers, descriptionType, photo, checkedOffers);
   const dayStart = formatDate(dateStart);
   const timeStart = formatTime(dateStart);
   const dayEnd = formatDate(dateEnd);
   const timeEnd = formatTime(dateEnd);
   const isNewEvent = newEvent ? `` : `${createEditoMarkup(favorite)}`;
-  const isDeleteBtn = newEvent ? `Cancel` : `Delete`;
+  const deleteButtonText = externalData.deleteButtonText;
+  const saveButtonText = externalData.saveButtonText;
+  const disableForm = externalData.disableform;
+
+  const isDeleteBtn = newEvent ? `Cancel` : deleteButtonText;
   return (
     `<li class="trip-events__item trip-form">
-      <form class="event trip-events__item  event  event--edit" action="#" method="post">
+      <form class="event trip-events__item  event  event--edit" action="#" method="post" disabled>
           <header class="event__header">
               <div class="event__type-wrapper">
                 <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -159,12 +196,7 @@ const createEventEditTemplate = (event, options = {}) => {
                 <div class="event__type-list">
                   <fieldset class="event__type-group">
                     <legend class="visually-hidden">Transfer</legend>
-                    ${createTypeMarkup(eventType, TRANSFERS)}
-                  </fieldset>
-
-                  <fieldset class="event__type-group">
-                    <legend class="visually-hidden">Activity</legend>
-                    ${createTypeMarkup(eventType, ACTIVITIES)}
+                    ${createTypeMarkup(eventType, types)}
                   </fieldset>
                 </div>
               </div>
@@ -175,7 +207,7 @@ const createEventEditTemplate = (event, options = {}) => {
                 </label>
                 <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
                 <datalist id="destination-list-1">
-                ${createDestinationsMarkup(DESTINATIONS)}
+                ${createDestinationsMarkup(destinations)}
                 </datalist>
               </div>
 
@@ -199,8 +231,8 @@ const createEventEditTemplate = (event, options = {}) => {
                 <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${priceValue}">
               </div>
 
-              <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-              <button class="event__reset-btn" type="reset">${isDeleteBtn}</button>
+              <button class="event__save-btn  btn  btn--blue" type="submit" ${disableForm}>${saveButtonText}</button>
+              <button class="event__reset-btn" type="reset" ${disableForm}>${isDeleteBtn}</button>
               ${isNewEvent}
               
             </header>
@@ -212,26 +244,31 @@ const createEventEditTemplate = (event, options = {}) => {
 
 const parseFormData = (formData) => {
   return {
-    eventType: formData.get(`event-type`),
-    destination: formData.get(`event-destination`),
-    priceValue: +formData.get(`event-price`),
-    dateStart: Date.parse(formData.get(`event-start-time`)),
-    dateEnd: Date.parse(formData.get(`event-end-time`)),
+    "type": formData.get(`event-type`),
+    "destination": {name: formData.get(`event-destination`)},
+    "base_price": +formData.get(`event-price`),
+    "date_from": Date.parse(formData.get(`event-start-time`)),
+    "date_to": Date.parse(formData.get(`event-end-time`)),
   };
 };
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(event, onDataChange) {
+  constructor(event, onDataChange, destinations, offers) {
     super();
     this._onDataChange = onDataChange;
     this._event = event;
+    this._photo = this._event.photo;
     this._favorite = this._event.favorite;
+    this._destinations = destinations;
+    this._description = this._event.description;
+    this._offers = offers;
     this._submitHandler = null;
     this._resetHandler = null;
     this._eventType = this._event.eventType;
     this._eventDestination = this._event.destination;
-    this._availableOffers = availableOffers(OFFERS, this._eventType).offers;
+    this._availableOffers = availableOffers(this._offers, this._eventType);
     this._eventOffers = this._event.offers;
+    this._externalData = DefaultData;
     this._deleteButtonClickHandler = null;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
@@ -244,7 +281,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, {offers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers});
+    return createEventEditTemplate(this._event, {offers: this._offers, destinations: this._destinations, checkedOffers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers, description: this._description, photo: this._event.photo, externalData: this._externalData});
   }
 
   removeElement() {
@@ -274,32 +311,6 @@ export default class EventEdit extends AbstractSmartComponent {
     this._applyFlatpickr();
   }
 
-  _applyFlatpickr() {
-    if (this._flatpickrStart || this._flatpickrEnd) {
-      this._flatpickrStart.destroy();
-      this._flatpickrEnd.destroy();
-      this._flatpickrStart = null;
-      this._flatpickrEnd = null;
-    }
-
-    const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
-    this._flatpickrStart = flatpickr(dateElements[0], {
-      altInput: true,
-      allowInput: true,
-      altFormat: `d/m/Y`,
-      dateFormat: `Z`,
-      defaultDate: this._event.dateStart || `today`,
-    });
-
-    this._flatpickrEnd = flatpickr(dateElements[1], {
-      altInput: true,
-      allowInput: true,
-      altFormat: `d/m/Y`,
-      dateFormat: `Z`,
-      defaultDate: this._event.dateEnd || `today`,
-    });
-  }
-
   reset() {
     this._favorite = this._event.favorite;
     this._eventType = this._event.eventType;
@@ -311,6 +322,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._event.eventType = this._eventType;
     this._event.destination = this._eventDestination;
     this._event.offers = this._eventOffers;
+    this._event.photo = this._photo;
     this.rerender();
   }
 
@@ -318,13 +330,20 @@ export default class EventEdit extends AbstractSmartComponent {
   getData() {
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
-    return Object.assign({offers: this._eventOffers}, parseFormData(formData));
+    const parsedData = parseFormData(formData);
+    parsedData.destination = Object.assign({description: this._description, pictures: this._photo}, parsedData.destination);
+    return new EventModel(Object.assign({id: this._event.id, offers: this._eventOffers}, parsedData));
   }
 
   setDeleteButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__reset-btn`)
       .addEventListener(`click`, handler);
     this._deleteButtonClickHandler = handler;
+  }
+
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
   }
 
   setSubmitHandler(handler) {
@@ -338,6 +357,32 @@ export default class EventEdit extends AbstractSmartComponent {
       rollupBtn.addEventListener(`click`, handler);
     }
     this._resetHandler = handler;
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickrStart || this._flatpickrEnd) {
+      this._flatpickrStart.destroy();
+      this._flatpickrEnd.destroy();
+      this._flatpickrStart = null;
+      this._flatpickrEnd = null;
+    }
+
+    const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
+    this._flatpickrStart = flatpickr(dateElements[0], {
+      altInput: true,
+      allowInput: true,
+      altFormat: `Y/m/d H:i`,
+      dateFormat: `Z`,
+      defaultDate: this._event.dateStart || `today`,
+    });
+
+    this._flatpickrEnd = flatpickr(dateElements[1], {
+      altInput: true,
+      allowInput: true,
+      altFormat: `Y/m/d H:i`,
+      dateFormat: `Z`,
+      defaultDate: this._event.dateEnd || `today`,
+    });
   }
 
   _favoritesHandler() {
@@ -358,7 +403,7 @@ export default class EventEdit extends AbstractSmartComponent {
       }
       evt.target.checked = true;
       this._eventType = evt.target.value;
-      this._availableOffers = availableOffers(OFFERS, this._eventType).offers;
+      this._availableOffers = availableOffers(this._offers, this._eventType).offers;
       this._eventOffers = [];
       this.rerender();
     });
@@ -380,13 +425,18 @@ export default class EventEdit extends AbstractSmartComponent {
 
   _changeDestination() {
     const destinationsList = this.getElement().querySelector(`#event-destination-1`);
+    const destinationNames = this._destinations.map((it) => {
+      return it.name;
+    });
     destinationsList.addEventListener(`change`, (evt) => {
-      if (!DESTINATIONS.some((it) => {
+      if (!destinationNames.some((it) => {
         return it === evt.target.value;
       }) || !evt.target.value) {
         destinationsList.setCustomValidity(`Сhoose an option from the list`);
       } else {
         this._eventDestination = evt.target.value;
+        this._description = getDescription(this._eventDestination, this._destinations);
+        this._photo = getPhotos(this._eventDestination, this._destinations);
         this.rerender();
       }
     });

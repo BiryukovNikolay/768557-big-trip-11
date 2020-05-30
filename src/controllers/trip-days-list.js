@@ -8,8 +8,9 @@ import {formatDayMonth, duration} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
 import EventController, {Mode as EventControllerMode, EmptyEvent} from "./event.js";
 
-const renderEvent = (eventListElement, event, onDataChange, onViewChange) => {
-  const eventController = new EventController(eventListElement, onDataChange, onViewChange);
+const renderEvent = (eventListElement, event, onDataChange, onViewChange, destinations, offers) => {
+
+  const eventController = new EventController(eventListElement, onDataChange, onViewChange, destinations, offers);
 
   eventController.render(event, EventControllerMode.DEFAULT);
 
@@ -45,10 +46,13 @@ const getDayEventsList = (events) => {
 
 
 export default class DaysListController {
-  constructor(container, eventsModel) {
+  constructor(container, eventsModel, destinationsModel, offersModel, api) {
 
     this._container = container;
     this._eventsModel = eventsModel;
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
+    this._api = api;
 
     this._showedEventControllers = [];
     this._container = container;
@@ -81,6 +85,10 @@ export default class DaysListController {
 
   render() {
     const events = this._eventsModel.getEvents();
+
+    const destinstions = this._destinationsModel.getDestinations();
+    const offers = this._offersModel.getOffers();
+
     if (events.length === 0) {
       render(this._container, this._noEventsComponent);
       return;
@@ -89,10 +97,13 @@ export default class DaysListController {
     render(this._container, this._sortComponent);
     render(this._container, this._daysList);
 
-    this._getDefaultDaylist(events);
+    this._getDefaultDaylist(events, destinstions, offers);
   }
 
   onCreateEvents() {
+    const destinstions = this._destinationsModel.getDestinations();
+    const offers = this._offersModel.getOffers();
+
     if (this._creatingEvent) {
       return;
     }
@@ -101,7 +112,7 @@ export default class DaysListController {
       it.setDefaultView();
     });
     const eventListElement = this._daysList.getElement();
-    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinstions, offers);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
   }
 
@@ -115,6 +126,8 @@ export default class DaysListController {
   _getDefaultDaylist(eventsList) {
     const daysListElement = this._container.querySelector(`.trip-days`);
     const dayEventsList = getDayEventsList(eventsList.sort((a, b) => a.dateStart - b.dateStart));
+    const destinstions = this._destinationsModel.getDestinations();
+    const offers = this._offersModel.getOffers();
 
     let pointCount = 1;
     dayEventsList.forEach((eventPoint, day) => {
@@ -122,7 +135,7 @@ export default class DaysListController {
       const eventList = new EventListComponent();
 
       eventPoint.forEach((it) => {
-        const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange);
+        const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange, destinstions, offers);
         this._showedEventControllers = this._showedEventControllers.concat(newEvents);
       });
 
@@ -137,6 +150,8 @@ export default class DaysListController {
   }
 
   _onSortTypeChange(type) {
+    const destinstions = this._destinationsModel.getDestinations();
+    const offers = this._offersModel.getOffers();
     this._creatingEvent = null;
     const events = this._eventsModel.getEvents();
     if (type === SortType.DEFAULT) {
@@ -153,7 +168,7 @@ export default class DaysListController {
     render(this._daysList.getElement(), dayEventList);
     render(dayEventList.getElement(), eventList);
     sortEvents.forEach((it) => {
-      const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange);
+      const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange, destinstions, offers);
       this._showedEventControllers = this._showedEventControllers.concat(newEvents);
     });
   }
@@ -179,20 +194,36 @@ export default class DaysListController {
         this._updateEvents();
         this._creatingEvent = null;
       } else {
-        this._eventsModel.addEvent(newData);
-        this._removeEvents();
-        this.render();
-        this._creatingEvent = null;
+        this._api.createEvent(newData)
+           .then((eventsModel) => {
+             this._eventsModel.addEvent(eventsModel);
+             this._removeEvents();
+             this.render();
+             this._creatingEvent = null;
+           })
+           .catch(() => {
+             eventController.shake();
+           });
       }
-
     } else if (newData === null) {
-      this._eventsModel.removeEvent(oldData.id);
-      this._updateEvents();
+      this._api.deleteEvent(oldData.id)
+         .then(() => {
+           this._eventsModel.removeEvent(oldData.id);
+           this._updateEvents();
+         }).catch(() => {
+           eventController.shake();
+         });
     } else {
-      const isSuccess = this._eventsModel.updateEvents(oldData.id, newData);
-      if (isSuccess) {
-        eventController.render(newData, EventControllerMode.DEFAULT);
-      }
+      this._api.updateEvent(oldData.id, newData)
+         .then((eventModel) => {
+           const isSuccess = this._eventsModel.updateEvents(oldData.id, eventModel);
+           if (isSuccess) {
+             eventController.render(eventModel, EventControllerMode.DEFAULT);
+           }
+         })
+         .catch(() => {
+           eventController.shake();
+         });
     }
   }
 }
