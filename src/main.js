@@ -45,8 +45,6 @@ render(tripMainElement, btnNewEvent);
 render(bodyContainer, tripPageElement);
 headerController.render();
 btnNewEvent.setClickHandler(daysListController.onCreateEvents);
-render(bodyContainer, statisticsComponent);
-statisticsComponent.hide();
 
 
 siteMenuComponent.setOnChange((menuItem) => {
@@ -80,6 +78,8 @@ apiWithProvider.getEvents()
      remove(listLoadComponent);
      eventsModel.setEvents(events);
      daysListController.render();
+     render(bodyContainer, statisticsComponent);
+     statisticsComponent.hide();
    });
 
 window.addEventListener(`load`, () => {
