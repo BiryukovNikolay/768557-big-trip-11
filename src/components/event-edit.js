@@ -13,9 +13,13 @@ const DefaultData = {
 };
 
 const availableOffers = (offerNames, eventType) => {
-  return offerNames.find((it) => {
-    return it.type === eventType;
-  });
+  if (offerNames.length !== 0) {
+    return offerNames.find((it) => {
+      return it.type === eventType;
+    }).offers;
+  } else {
+    return [];
+  }
 };
 
 const createOfferMarkup = (offers, checkedOffers) => {
@@ -262,7 +266,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._resetHandler = null;
     this._eventType = this._event.eventType;
     this._eventDestination = this._event.destination;
-    this._availableOffers = availableOffers(this._offers, this._eventType).offers;
+    this._availableOffers = availableOffers(this._offers, this._eventType);
     this._eventOffers = this._event.offers;
     this._externalData = DefaultData;
     this._deleteButtonClickHandler = null;
@@ -431,8 +435,8 @@ export default class EventEdit extends AbstractSmartComponent {
         destinationsList.setCustomValidity(`Сhoose an option from the list`);
       } else {
         this._eventDestination = evt.target.value;
-        this._description = getDescription(evt.target.value, this._destinations);
-        this._photo = getPhotos(evt.target.value, this._destinations);
+        this._description = getDescription(this._eventDestination, this._destinations);
+        this._photo = getPhotos(this._eventDestination, this._destinations);
         this.rerender();
       }
     });

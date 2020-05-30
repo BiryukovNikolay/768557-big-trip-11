@@ -1,4 +1,4 @@
-import API from "./api/index.js";
+import Api from "./api/index.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 import EventsModel from "./models/trip-events.js";
@@ -6,12 +6,13 @@ import DestinationsModel from "./models/destinations.js";
 import OffersModel from "./models/offers.js";
 import MenuControlComponent, {MenuItem} from "./components/menu-control.js";
 import BtnNewEventComponent from "./components/btn-new-event.js";
+import ListLoadComponent from "./components/list-loading.js";
 import TripPageComponent from "./components/trip-page.js";
 import StatisticsComponent from "./components/statistics.js";
 import DaysListController from "./controllers/trip-days-list.js";
 import RouteAndPriceController from "./controllers/header.js";
 import FilterController from "./controllers/filters.js";
-import {render} from "./utils/render.js";
+import {render, remove} from "./utils/render.js";
 
 const AUTHORIZATION = `Basic t54e670rt29jg7r`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
@@ -19,7 +20,7 @@ const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
-const api = new API(END_POINT, AUTHORIZATION);
+const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 const eventsModel = new EventsModel();
@@ -35,7 +36,7 @@ const tripPageElement = new TripPageComponent();
 const headerController = new RouteAndPriceController(tripMainElement, eventsModel);
 const daysListController = new DaysListController(tripPageElement.getElement(), eventsModel, destinationsModel, offersModel, apiWithProvider);
 const statisticsComponent = new StatisticsComponent({events: eventsModel});
-
+const listLoadComponent = new ListLoadComponent();
 
 render(tripControlElement, siteMenuComponent);
 filterController.render();
@@ -72,7 +73,11 @@ apiWithProvider.getOffers()
   });
 
 apiWithProvider.getEvents()
+   .then(
+       render(bodyContainer, listLoadComponent)
+   )
    .then((events) => {
+     remove(listLoadComponent);
      eventsModel.setEvents(events);
      daysListController.render();
    });
