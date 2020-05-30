@@ -331,8 +331,8 @@ export default class EventEdit extends AbstractSmartComponent {
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
     const parsedData = parseFormData(formData);
-    parsedData.destination = Object.assign({"description": this._description, "pictures": this._photo}, parsedData.destination);
-    return new EventModel(Object.assign({"id": this._event.id, "offers": this._eventOffers}, parsedData));
+    parsedData.destination = Object.assign({description: this._description, pictures: this._photo}, parsedData.destination);
+    return new EventModel(Object.assign({id: this._event.id, offers: this._eventOffers}, parsedData));
   }
 
   setDeleteButtonClickHandler(handler) {
