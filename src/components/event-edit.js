@@ -1,6 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import EventModel from "../models/event.js";
-import {formatDate, formatTime} from "../utils/date.js";
+import {formatDate, formatTime, formatDateIso} from "../utils/date.js";
 import flatpickr from "flatpickr";
 
 import "flatpickr/dist/flatpickr.min.css";
@@ -247,8 +247,8 @@ const parseFormData = (formData) => {
     "type": formData.get(`event-type`),
     "destination": {name: formData.get(`event-destination`)},
     "base_price": +formData.get(`event-price`),
-    "date_from": Date.parse(formData.get(`event-start-time`)),
-    "date_to": Date.parse(formData.get(`event-end-time`)),
+    "date_from": formatDateIso(formData.get(`event-start-time`)),
+    "date_to": formatDateIso(formData.get(`event-end-time`)),
   };
 };
 
@@ -367,7 +367,23 @@ export default class EventEdit extends AbstractSmartComponent {
       this._flatpickrEnd = null;
     }
 
+    const getFLetpickrEnd = () => {
+      return flatpickr(dateElements[1], {
+        altInput: true,
+        allowInput: true,
+        altFormat: `Y/m/d H:i`,
+        dateFormat: `Z`,
+        defaultDate: this._event.dateEnd || this._flatpickrStart.latestSelectedDateObj || `today`,
+        minDate: this._flatpickrStart.latestSelectedDateObj,
+      });
+    };
+
     const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
+    dateElements[0].addEventListener(`change`, () => {
+      this._flatpickrEnd.destroy();
+      this._flatpickrEnd = getFLetpickrEnd();
+    });
+
     this._flatpickrStart = flatpickr(dateElements[0], {
       altInput: true,
       allowInput: true,
@@ -376,13 +392,7 @@ export default class EventEdit extends AbstractSmartComponent {
       defaultDate: this._event.dateStart || `today`,
     });
 
-    this._flatpickrEnd = flatpickr(dateElements[1], {
-      altInput: true,
-      allowInput: true,
-      altFormat: `Y/m/d H:i`,
-      dateFormat: `Z`,
-      defaultDate: this._event.dateEnd || `today`,
-    });
+    this._flatpickrEnd = getFLetpickrEnd();
   }
 
   _favoritesHandler() {

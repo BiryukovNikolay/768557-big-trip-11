@@ -4,7 +4,7 @@ import DaysListComponent from "../components/trip-days-list.js";
 import SortComponent from "../components/sort.js";
 import NoEventsComponent from "../components/no-event.js";
 import {render, remove} from "../utils/render.js";
-import {formatDayMonth, duration} from "../utils/date.js";
+import {formatDayMonth, duration, formatDayMonthYear} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
 import EventController, {Mode as EventControllerMode, EmptyEvent} from "./event.js";
 
@@ -35,7 +35,7 @@ const getSortedEvents = (events, sortType) => {
 const getDayEventsList = (events) => {
   const dayEventList = new Map();
   events.forEach((it) => {
-    const dataDay = formatDayMonth(it.dateStart);
+    const dataDay = formatDayMonthYear(it.dateStart);
     if (!dayEventList.has(dataDay)) {
       dayEventList.set(dataDay, []);
     }
@@ -126,13 +126,15 @@ export default class DaysListController {
 
   _getDefaultDaylist(eventsList) {
     const daysListElement = this._container.querySelector(`.trip-days`);
-    const dayEventsList = getDayEventsList(eventsList.sort((a, b) => a.dateStart - b.dateStart));
+    const dayEventsList = getDayEventsList(eventsList.sort((a, b) => {
+      return Date.parse(a.dateStart) - Date.parse(b.dateStart);
+    }));
     const destinstions = this._destinationsModel.getDestinations();
     const offers = this._offersModel.getOffers();
 
     let pointCount = 1;
     dayEventsList.forEach((eventPoint, day) => {
-      const dayEventList = new TripDayComponent(day, pointCount);
+      const dayEventList = new TripDayComponent(formatDayMonth(day), pointCount);
       const eventList = new EventListComponent();
 
       eventPoint.forEach((it) => {
