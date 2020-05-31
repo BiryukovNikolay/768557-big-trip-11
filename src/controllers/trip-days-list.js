@@ -221,8 +221,6 @@ export default class DaysListController {
     } else {
       this._api.updateEvent(oldData.id, newData)
          .then((eventModel) => {
-           console.log(oldData.dateStart !== newData.dateStart || oldData.dateEnd !== newData.dateEnd);
-        
            const isSuccess = this._eventsModel.updateEvents(oldData.id, eventModel);
            if (isSuccess) {
              eventController.render(eventModel, EventControllerMode.DEFAULT);
