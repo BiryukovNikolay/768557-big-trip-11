@@ -113,6 +113,7 @@ export default class DaysListController {
     });
     const eventListElement = this._daysList.getElement();
     this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinstions, offers);
+    this._showedEventControllers = this._showedEventControllers.concat(this._creatingEvent);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
   }
 
@@ -147,6 +148,10 @@ export default class DaysListController {
 
   _onViewChange() {
     this._showedEventControllers.forEach((it) => it.setDefaultView());
+    if (this._creatingEvent) {
+      this._creatingEvent.destroy();
+      this._creatingEvent = null;
+    }
   }
 
   _onSortTypeChange(type) {

@@ -403,7 +403,7 @@ export default class EventEdit extends AbstractSmartComponent {
       }
       evt.target.checked = true;
       this._eventType = evt.target.value;
-      this._availableOffers = availableOffers(this._offers, this._eventType).offers;
+      this._availableOffers = availableOffers(this._offers, this._eventType);
       this._eventOffers = [];
       this.rerender();
     });
