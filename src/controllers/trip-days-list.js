@@ -186,6 +186,10 @@ export default class DaysListController {
   }
 
   _onFilterChange() {
+    remove(this._sortComponent);
+    render(this._container, this._sortComponent);
+    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+    this._onSortTypeChange(SortType.DEFAULT);
     this._creatingEvent = null;
     this._updateEvents();
   }

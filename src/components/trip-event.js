@@ -1,5 +1,6 @@
 import {formatTime, formatDuration} from "../utils/date.js";
 import AbstractComponent from "./abstract-component.js";
+import {ACTIVITIES} from "../const.js";
 
 const createOfferMarkup = (offers) => {
   return offers.map((it) => {
@@ -29,6 +30,11 @@ const createOffersMarkup = (offers) => {
   }
 };
 
+const isActivities = (type) => {
+  return ACTIVITIES.some((it) => {
+    return it === type;
+  });
+};
 
 const createTripEventTemplate = (event) => {
   const {eventType, dateStart, dateEnd, destination, priceValue} = event;
@@ -39,6 +45,7 @@ const createTripEventTemplate = (event) => {
   const endDate = dateEnd;
   const duration = formatDuration(dateStart, dateEnd);
   const offersMarkup = createOffersMarkup(event.offers);
+  const pretext = isActivities(eventType) ? `in` : `to`;
 
   return (
     `<li class="trip-events__item">
@@ -46,7 +53,7 @@ const createTripEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${typeIconName}" alt="Event type icon">
         </div>
-        <h3 class="event__title">${eventType} to ${destination}</h3>
+        <h3 class="event__title">${eventType} ${pretext} ${destination}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${startDate}">${startTime}</time>

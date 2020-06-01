@@ -2,6 +2,7 @@ import AbstractSmartComponent from "./abstract-smart-component.js";
 import EventModel from "../models/event.js";
 import {formatDate, formatTime, formatDateIso} from "../utils/date.js";
 import flatpickr from "flatpickr";
+import {ACTIVITIES} from "../const.js";
 
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/material_blue.css";
@@ -164,6 +165,12 @@ const getTypes = (ar) => {
   });
 };
 
+const isActivities = (type) => {
+  return ACTIVITIES.some((it) => {
+    return it === type;
+  });
+};
+
 
 const createEventEditTemplate = (event, options = {}) => {
   const {priceValue, dateStart, dateEnd, newEvent} = event;
@@ -180,6 +187,7 @@ const createEventEditTemplate = (event, options = {}) => {
   const deleteButtonText = externalData.deleteButtonText;
   const saveButtonText = externalData.saveButtonText;
   const disableForm = externalData.disableform;
+  const pretext = isActivities(eventType) ? `in` : `to`;
 
   const isDeleteBtn = newEvent ? `Cancel` : deleteButtonText;
   return (
@@ -203,7 +211,7 @@ const createEventEditTemplate = (event, options = {}) => {
 
               <div class="event__field-group  event__field-group--destination">
                 <label class="event__label  event__type-output" for="event-destination-1">
-                  ${eventType}
+                  ${eventType} ${pretext}
                 </label>
                 <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
                 <datalist id="destination-list-1">
