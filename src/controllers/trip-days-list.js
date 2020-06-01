@@ -73,6 +73,10 @@ export default class DaysListController {
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  closeAllEdit() {
+    this._onViewChange();
+  }
+
   hide() {
     this._sortComponent.hide();
     this._daysList.hide();
@@ -101,7 +105,7 @@ export default class DaysListController {
   }
 
   onCreateEvents() {
-    const destinstions = this._destinationsModel.getDestinations();
+    const destinations = this._destinationsModel.getDestinations();
     const offers = this._offersModel.getOffers();
 
     if (this._creatingEvent) {
@@ -112,7 +116,7 @@ export default class DaysListController {
       it.setDefaultView();
     });
     const eventListElement = this._daysList.getElement();
-    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinstions, offers);
+    this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinations, offers);
     this._showedEventControllers = this._showedEventControllers.concat(this._creatingEvent);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
   }
@@ -180,16 +184,20 @@ export default class DaysListController {
     });
   }
 
+  _resetSort() {
+    remove(this._sortComponent);
+    render(this._container, this._sortComponent);
+    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+    this._onSortTypeChange(SortType.DEFAULT);
+  }
+
   _updateEvents() {
     this._removeEvents();
     this.render();
   }
 
   _onFilterChange() {
-    remove(this._sortComponent);
-    render(this._container, this._sortComponent);
-    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
-    this._onSortTypeChange(SortType.DEFAULT);
+    this._resetSort();
     this._creatingEvent = null;
     this._updateEvents();
   }
@@ -202,14 +210,15 @@ export default class DaysListController {
     if (oldData === EmptyEvent) {
       if (newData === null) {
         this._creatingEvent.destroy();
+        this._resetSort();
         this._updateEvents();
         this._creatingEvent = null;
       } else {
         this._api.createEvent(newData)
            .then((eventsModel) => {
              this._eventsModel.addEvent(eventsModel);
-             this._removeEvents();
-             this.render();
+             this._resetSort();
+             this._updateEvents();
              this._creatingEvent = null;
            })
            .catch(() => {
@@ -220,6 +229,7 @@ export default class DaysListController {
       this._api.deleteEvent(oldData.id)
          .then(() => {
            this._eventsModel.removeEvent(oldData.id);
+           this._resetSort();
            this._updateEvents();
          }).catch(() => {
            eventController.shake();
@@ -231,8 +241,8 @@ export default class DaysListController {
            if (isSuccess) {
              eventController.render(eventModel, EventControllerMode.DEFAULT);
              if (oldData.dateStart !== newData.dateStart || oldData.dateEnd !== newData.dateEnd) {
-               this._removeEvents();
-               this.render();
+               this._resetSort();
+               this._updateEvents();
              }
            }
          })

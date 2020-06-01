@@ -20,13 +20,16 @@ export default class MenuControl extends AbstractComponent {
   }
 
   setOnChange(handler) {
-    this.getElement().addEventListener(`click`, (evt) => {
-      if (evt.target.tagName !== `A`) {
-        return;
-      }
-      const menuItem = evt.target.textContent;
-
-      handler(menuItem);
+    const tripTabsBtns = this.getElement().querySelectorAll(`.trip-tabs__btn`);
+    tripTabsBtns.forEach((it) => {
+      it.addEventListener(`click`, (evt) => {
+        tripTabsBtns.forEach((i) => {
+          i.classList.remove(`trip-tabs__btn--active`);
+        });
+        it.classList.add(`trip-tabs__btn--active`);
+        const menuItem = evt.target.textContent;
+        handler(menuItem);
+      });
     });
   }
 }
