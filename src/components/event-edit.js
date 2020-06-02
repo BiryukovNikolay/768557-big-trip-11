@@ -330,6 +330,8 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   save() {
+    this._event.dateStart = this._dateStart;
+    this._event.dateEnd = this._dateEnd;
     this._event.favorite = this._favorite;
     this._event.eventType = this._eventType;
     this._event.destination = this._eventDestination;

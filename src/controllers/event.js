@@ -113,7 +113,7 @@ export default class EventController {
       this._eventEditComponent.setData({
         deleteButtonText: `Delete`,
         saveButtonText: `Save`,
-        disableform: `disabled`,
+        disableform: ``,
       });
 
 
@@ -172,11 +172,11 @@ export default class EventController {
 
   _onEditFormSubmit(evt) {
     evt.preventDefault();
+    this._eventEditComponent.save();
     const destinationsList = this._eventEditComponent.getElement().querySelector(`#event-destination-1`);
     if (this._event.destination !== ``) {
       this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = ``;
       const data = this._eventEditComponent.getData();
-      this._eventEditComponent.save();
       this._eventEditComponent.setData({
         saveButtonText: `Saving...`,
         disableform: `disabled`,
