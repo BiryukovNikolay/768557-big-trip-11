@@ -173,8 +173,8 @@ const isActivities = (type) => {
 
 
 const createEventEditTemplate = (event, options = {}) => {
-  const {priceValue, dateStart, dateEnd, newEvent} = event;
-  const {offers, destinations, favorite, checkedOffers, eventType, destination, availableTypeOffers, description, photo, externalData} = options;
+  const {newEvent} = event;
+  const {dateStart, dateEnd, price, offers, destinations, favorite, checkedOffers, eventType, destination, availableTypeOffers, description, photo, externalData} = options;
   const types = getTypes(offers);
   const descriptionType = description ? description : ``;
   const typeIconName = `${eventType.toLowerCase()}.png`;
@@ -236,7 +236,7 @@ const createEventEditTemplate = (event, options = {}) => {
                   <span class="visually-hidden">Price</span>
                   &euro;
                 </label>
-                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${priceValue}">
+                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit" ${disableForm}>${saveButtonText}</button>
@@ -267,6 +267,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._onDataChange = onDataChange;
     this._event = event;
     this._price = this._event.priceValue;
+    this._dateStart = this._event.dateStart;
+    this._dateEnd = this._event.dateEnd;
     this._photo = this._event.photo;
     this._favorite = this._event.favorite;
     this._destinations = destinations;
@@ -291,7 +293,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, {offers: this._offers, destinations: this._destinations, checkedOffers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers, description: this._description, photo: this._photo, externalData: this._externalData});
+    return createEventEditTemplate(this._event, {dateEnd: this._dateEnd, dateStart: this._dateStart, offers: this._offers, destinations: this._destinations, checkedOffers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers, description: this._description, photo: this._photo, externalData: this._externalData, price: this._price});
   }
 
   removeElement() {
@@ -390,13 +392,13 @@ export default class EventEdit extends AbstractSmartComponent {
 
     const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
     dateElements[0].addEventListener(`change`, () => {
-      this._event.dateStart = this._flatpickrStart.latestSelectedDateObj;
+      this._dateStart = this._flatpickrStart.latestSelectedDateObj;
       this._flatpickrEnd.destroy();
       this._flatpickrEnd = getFLetpickrEnd();
     });
 
     dateElements[1].addEventListener(`change`, () => {
-      this._event.dateEnd = this._flatpickrEnd.latestSelectedDateObj;
+      this._dateEnd = this._flatpickrEnd.latestSelectedDateObj;
     });
 
     this._flatpickrStart = flatpickr(dateElements[0], {
@@ -445,7 +447,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
     priceInput.addEventListener(`input`, (evt) => {
       evt.target.value = evt.target.value.replace(/[^\d]/g, ``);
-      this._event.priceValue = evt.target.value;
+      this._price = evt.target.value;
     });
   }
 
@@ -461,7 +463,7 @@ export default class EventEdit extends AbstractSmartComponent {
       }) || !evt.target.value) {
         destinationsList.setCustomValidity(`Сhoose an option from the list`);
       } else {
-        this._event.destination = evt.target.value;
+
         this._eventDestination = evt.target.value;
         this._description = getDescription(this._eventDestination, this._destinations);
         this._photo = getPhotos(this._eventDestination, this._destinations);

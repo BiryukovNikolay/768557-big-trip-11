@@ -129,7 +129,6 @@ export default class EventController {
   _replaceEditToEvent() {
     if (this._mode === Mode.ADDING) {
       remove(this._eventEditComponent);
-
     }
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
