@@ -62,17 +62,19 @@ siteMenuComponent.setOnChange((menuItem) => {
   }
 });
 
-apiWithProvider.getDestinations()
+const destinationList = apiWithProvider.getDestinations()
   .then((destinations) => {
     destinationsModel.setDestinations(destinations);
   });
 
-apiWithProvider.getOffers()
+const offersList = apiWithProvider.getOffers()
   .then((offers) => {
     offersModel.setOffers(offers);
   });
 
-apiWithProvider.getEvents()
+
+Promise.all([offersList, destinationList]).then(() => {
+  apiWithProvider.getEvents()
    .then(
        render(bodyContainer, listLoadComponent)
    )
@@ -83,6 +85,8 @@ apiWithProvider.getEvents()
      render(bodyContainer, statisticsComponent);
      statisticsComponent.hide();
    });
+});
+
 
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`./sw.js`)

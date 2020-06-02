@@ -177,11 +177,11 @@ export default class EventController {
     if (this._event.destination !== ``) {
       this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = ``;
       const data = this._eventEditComponent.getData();
+      this._onDataChange(this._event, data);
       this._eventEditComponent.setData({
         saveButtonText: `Saving...`,
         disableform: `disabled`,
       });
-      this._onDataChange(this._event, data);
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     } else {
       destinationsList.setCustomValidity(`Сhoose an option from the list`);
