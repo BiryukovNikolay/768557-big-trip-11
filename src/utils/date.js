@@ -9,7 +9,7 @@ export const duration = (dateStart, dateEnd) => {
 
 export const formatDuration = (dateStart, dateEnd) => {
   if (momentDurationFormatSetup) {
-    return moment.duration(duration(dateStart, dateEnd), `milliseconds`).format(`d[D] h[H] m[M]`);
+    return moment.duration(duration(dateStart, dateEnd), `milliseconds`).format(`dd[D] hh[H] mm[M]`);
   }
   return ``;
 };
