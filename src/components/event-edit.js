@@ -324,6 +324,14 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   reset() {
+    console.log(this._price, this._event.priceValue);
+    
+    this._price = this._event.priceValue;
+    this._dateStart = this._event.dateStart;
+    this._dateEnd = this._event.dateEnd;
+    this._photo = this._event.photo;
+    this._eventDestination = this._event.destination;
+    this._description = this._event.description;
     this._favorite = this._event.favorite;
     this._eventType = this._event.eventType;
     this.rerender();
