@@ -3,7 +3,7 @@ import AbstractComponent from "./abstract-smart-component.js";
 
 const createRouteAndPriceInformationTemplate = (eventsList) => {
 
-  const events = eventsList.sort((a, b) => a.dateStart - b.dateStart);
+  const events = eventsList.sort((a, b) => Date.parse(a.dateStart) - Date.parse(b.dateStart));
 
   let route = ``;
   let date = ``;

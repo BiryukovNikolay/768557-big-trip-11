@@ -18,7 +18,7 @@ export const EmptyEvent = {
   dateStart: new Date(),
   dateEnd: new Date(),
   offers: [],
-  photo: [],
+  photo: null,
   newEvent: true,
 };
 
@@ -45,12 +45,12 @@ export default class EventController {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
-    this.event = event;
+    this._event = event;
 
-    this._eventComponent = new TripEventComponent(this.event);
+    this._eventComponent = new TripEventComponent(this._event);
     this._eventComponent.setRollupHandler(this._onEditButton);
 
-    this._eventEditComponent = new EventEditComponent(this.event, this._onDataChange, this._destinations, this._offers);
+    this._eventEditComponent = new EventEditComponent(this._event, this._onDataChange, this._destinations, this._offers);
     this._eventEditComponent.setSubmitHandler(this._onEditFormSubmit);
     this._eventEditComponent.setResetHandler(this._onResetButton);
 
@@ -85,7 +85,7 @@ export default class EventController {
   }
 
   getEvent() {
-    return this.event;
+    return this._event;
   }
 
   setDefaultView() {
@@ -103,7 +103,6 @@ export default class EventController {
   shake() {
     this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
     this._eventComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-
     this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = `2px solid rgba(214, 15, 15, 0.5)`;
 
 
@@ -114,7 +113,7 @@ export default class EventController {
       this._eventEditComponent.setData({
         deleteButtonText: `Delete`,
         saveButtonText: `Save`,
-        disableform: `disabled`,
+        disableform: ``,
       });
 
 
@@ -130,7 +129,6 @@ export default class EventController {
   _replaceEditToEvent() {
     if (this._mode === Mode.ADDING) {
       remove(this._eventEditComponent);
-
     }
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
@@ -174,14 +172,19 @@ export default class EventController {
 
   _onEditFormSubmit(evt) {
     evt.preventDefault();
-    this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = ``;
-    const data = this._eventEditComponent.getData();
     this._eventEditComponent.save();
-    this._eventEditComponent.setData({
-      saveButtonText: `Saving...`,
-      disableform: `disabled`,
-    });
-    this._onDataChange(this.event, data);
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    const destinationsList = this._eventEditComponent.getElement().querySelector(`#event-destination-1`);
+    if (this._event.destination !== ``) {
+      this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = ``;
+      const data = this._eventEditComponent.getData();
+      this._onDataChange(this._event, data);
+      this._eventEditComponent.setData({
+        saveButtonText: `Saving...`,
+        disableform: `disabled`,
+      });
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
+    } else {
+      destinationsList.setCustomValidity(`Сhoose an option from the list`);
+    }
   }
 }

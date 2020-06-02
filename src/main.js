@@ -14,7 +14,7 @@ import RouteAndPriceController from "./controllers/header.js";
 import FilterController from "./controllers/filters.js";
 import {render, remove} from "./utils/render.js";
 
-const AUTHORIZATION = `Basic t54e670rt29jg7r`;
+const AUTHORIZATION = `Basic t54e670er459jg7r`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
@@ -41,7 +41,6 @@ const listLoadComponent = new ListLoadComponent();
 render(tripControlElement, siteMenuComponent);
 filterController.render();
 render(tripMainElement, btnNewEvent);
-render(tripMainElement, btnNewEvent);
 render(bodyContainer, tripPageElement);
 headerController.render();
 btnNewEvent.setClickHandler(daysListController.onCreateEvents);
@@ -50,27 +49,32 @@ btnNewEvent.setClickHandler(daysListController.onCreateEvents);
 siteMenuComponent.setOnChange((menuItem) => {
   switch (menuItem) {
     case MenuItem.STATS:
+      btnNewEvent.setDisabled();
+      daysListController.closeAllEdit();
       daysListController.hide();
       statisticsComponent.show();
       break;
     case MenuItem.TABLE:
+      btnNewEvent.setAvailable();
       statisticsComponent.hide();
       daysListController.show();
       break;
   }
 });
 
-apiWithProvider.getDestinations()
+const destinationList = apiWithProvider.getDestinations()
   .then((destinations) => {
     destinationsModel.setDestinations(destinations);
   });
 
-apiWithProvider.getOffers()
+const offersList = apiWithProvider.getOffers()
   .then((offers) => {
     offersModel.setOffers(offers);
   });
 
-apiWithProvider.getEvents()
+
+Promise.all([offersList, destinationList]).then(() => {
+  apiWithProvider.getEvents()
    .then(
        render(bodyContainer, listLoadComponent)
    )
@@ -81,6 +85,8 @@ apiWithProvider.getEvents()
      render(bodyContainer, statisticsComponent);
      statisticsComponent.hide();
    });
+});
+
 
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`./sw.js`)

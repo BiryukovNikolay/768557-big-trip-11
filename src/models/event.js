@@ -1,3 +1,5 @@
+import {formatDateIso} from "../utils/date.js";
+
 const getParametr = (obj, key) => {
   return obj[key];
 };
@@ -9,8 +11,8 @@ export default class Event {
     this.description = getParametr(data[`destination`], `description`);
     this.destination = getParametr(data[`destination`], `name`);
     this.photo = getParametr(data[`destination`], `pictures`);
-    this.dateStart = data[`date_from`];
-    this.dateEnd = data[`date_to`];
+    this.dateStart = formatDateIso(data[`date_from`]);
+    this.dateEnd = formatDateIso(data[`date_to`]);
     this.offers = data[`offers`];
     this.favorite = Boolean(data[`is_favorite`]);
     this.priceValue = data[`base_price`];

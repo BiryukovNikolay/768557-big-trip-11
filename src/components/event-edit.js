@@ -1,7 +1,8 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import EventModel from "../models/event.js";
-import {formatDate, formatTime} from "../utils/date.js";
+import {formatDate, formatTime, formatDateIso} from "../utils/date.js";
 import flatpickr from "flatpickr";
+import {ACTIVITIES} from "../const.js";
 
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/material_blue.css";
@@ -164,10 +165,16 @@ const getTypes = (ar) => {
   });
 };
 
+const isActivities = (type) => {
+  return ACTIVITIES.some((it) => {
+    return it === type;
+  });
+};
+
 
 const createEventEditTemplate = (event, options = {}) => {
-  const {priceValue, dateStart, dateEnd, newEvent} = event;
-  const {offers, destinations, favorite, checkedOffers, eventType, destination, availableTypeOffers, description, photo, externalData} = options;
+  const {newEvent} = event;
+  const {dateStart, dateEnd, price, offers, destinations, favorite, checkedOffers, eventType, destination, availableTypeOffers, description, photo, externalData} = options;
   const types = getTypes(offers);
   const descriptionType = description ? description : ``;
   const typeIconName = `${eventType.toLowerCase()}.png`;
@@ -180,6 +187,7 @@ const createEventEditTemplate = (event, options = {}) => {
   const deleteButtonText = externalData.deleteButtonText;
   const saveButtonText = externalData.saveButtonText;
   const disableForm = externalData.disableform;
+  const pretext = isActivities(eventType) ? `in` : `to`;
 
   const isDeleteBtn = newEvent ? `Cancel` : deleteButtonText;
   return (
@@ -203,7 +211,7 @@ const createEventEditTemplate = (event, options = {}) => {
 
               <div class="event__field-group  event__field-group--destination">
                 <label class="event__label  event__type-output" for="event-destination-1">
-                  ${eventType}
+                  ${eventType} ${pretext}
                 </label>
                 <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
                 <datalist id="destination-list-1">
@@ -228,7 +236,7 @@ const createEventEditTemplate = (event, options = {}) => {
                   <span class="visually-hidden">Price</span>
                   &euro;
                 </label>
-                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${priceValue}">
+                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit" ${disableForm}>${saveButtonText}</button>
@@ -243,12 +251,13 @@ const createEventEditTemplate = (event, options = {}) => {
 };
 
 const parseFormData = (formData) => {
+
   return {
     "type": formData.get(`event-type`),
     "destination": {name: formData.get(`event-destination`)},
     "base_price": +formData.get(`event-price`),
-    "date_from": Date.parse(formData.get(`event-start-time`)),
-    "date_to": Date.parse(formData.get(`event-end-time`)),
+    "date_from": formatDateIso(formData.get(`event-start-time`)),
+    "date_to": formatDateIso(formData.get(`event-end-time`)),
   };
 };
 
@@ -257,6 +266,9 @@ export default class EventEdit extends AbstractSmartComponent {
     super();
     this._onDataChange = onDataChange;
     this._event = event;
+    this._price = this._event.priceValue;
+    this._dateStart = this._event.dateStart;
+    this._dateEnd = this._event.dateEnd;
     this._photo = this._event.photo;
     this._favorite = this._event.favorite;
     this._destinations = destinations;
@@ -281,7 +293,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, {offers: this._offers, destinations: this._destinations, checkedOffers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers, description: this._description, photo: this._event.photo, externalData: this._externalData});
+    return createEventEditTemplate(this._event, {dateEnd: this._dateEnd, dateStart: this._dateStart, offers: this._offers, destinations: this._destinations, checkedOffers: this._eventOffers, favorite: this._favorite, eventType: this._eventType, destination: this._eventDestination, availableTypeOffers: this._availableOffers, description: this._description, photo: this._photo, externalData: this._externalData, price: this._price});
   }
 
   removeElement() {
@@ -312,12 +324,20 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   reset() {
+    this._price = this._event.priceValue;
+    this._dateStart = this._event.dateStart;
+    this._dateEnd = this._event.dateEnd;
+    this._photo = this._event.photo;
+    this._eventDestination = this._event.destination;
+    this._description = this._event.description;
     this._favorite = this._event.favorite;
     this._eventType = this._event.eventType;
     this.rerender();
   }
 
   save() {
+    this._event.dateStart = this._dateStart;
+    this._event.dateEnd = this._dateEnd;
     this._event.favorite = this._favorite;
     this._event.eventType = this._eventType;
     this._event.destination = this._eventDestination;
@@ -367,7 +387,28 @@ export default class EventEdit extends AbstractSmartComponent {
       this._flatpickrEnd = null;
     }
 
+    const getFLetpickrEnd = () => {
+      return flatpickr(dateElements[1], {
+        altInput: true,
+        allowInput: true,
+        altFormat: `Y/m/d H:i`,
+        dateFormat: `Z`,
+        defaultDate: this._event.dateEnd || this._flatpickrStart.latestSelectedDateObj || `today`,
+        minDate: this._flatpickrStart.latestSelectedDateObj,
+      });
+    };
+
     const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
+    dateElements[0].addEventListener(`change`, () => {
+      this._dateStart = this._flatpickrStart.latestSelectedDateObj;
+      this._flatpickrEnd.destroy();
+      this._flatpickrEnd = getFLetpickrEnd();
+    });
+
+    dateElements[1].addEventListener(`change`, () => {
+      this._dateEnd = this._flatpickrEnd.latestSelectedDateObj;
+    });
+
     this._flatpickrStart = flatpickr(dateElements[0], {
       altInput: true,
       allowInput: true,
@@ -376,13 +417,7 @@ export default class EventEdit extends AbstractSmartComponent {
       defaultDate: this._event.dateStart || `today`,
     });
 
-    this._flatpickrEnd = flatpickr(dateElements[1], {
-      altInput: true,
-      allowInput: true,
-      altFormat: `Y/m/d H:i`,
-      dateFormat: `Z`,
-      defaultDate: this._event.dateEnd || `today`,
-    });
+    this._flatpickrEnd = getFLetpickrEnd();
   }
 
   _favoritesHandler() {
@@ -403,7 +438,7 @@ export default class EventEdit extends AbstractSmartComponent {
       }
       evt.target.checked = true;
       this._eventType = evt.target.value;
-      this._availableOffers = availableOffers(this._offers, this._eventType).offers;
+      this._availableOffers = availableOffers(this._offers, this._eventType);
       this._eventOffers = [];
       this.rerender();
     });
@@ -420,6 +455,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
     priceInput.addEventListener(`input`, (evt) => {
       evt.target.value = evt.target.value.replace(/[^\d]/g, ``);
+      this._price = evt.target.value;
     });
   }
 
@@ -428,12 +464,14 @@ export default class EventEdit extends AbstractSmartComponent {
     const destinationNames = this._destinations.map((it) => {
       return it.name;
     });
+
     destinationsList.addEventListener(`change`, (evt) => {
       if (!destinationNames.some((it) => {
         return it === evt.target.value;
       }) || !evt.target.value) {
         destinationsList.setCustomValidity(`Сhoose an option from the list`);
       } else {
+
         this._eventDestination = evt.target.value;
         this._description = getDescription(this._eventDestination, this._destinations);
         this._photo = getPhotos(this._eventDestination, this._destinations);
