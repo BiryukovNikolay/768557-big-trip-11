@@ -3,7 +3,7 @@ import TripDayComponent from "../components/trip-day.js";
 import DaysListComponent from "../components/trip-days-list.js";
 import SortComponent from "../components/sort.js";
 import NoEventsComponent from "../components/no-event.js";
-import {render, remove} from "../utils/render.js";
+import {render, remove, RenderPosition} from "../utils/render.js";
 import {formatDayMonth, duration, formatDayMonthYear} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
 import EventController, {Mode as EventControllerMode, EmptyEvent} from "./event.js";
@@ -115,6 +115,8 @@ export default class DaysListController {
     this._showedEventControllers.forEach((it) => {
       it.setDefaultView();
     });
+    this._resetSort();
+    this._updateEvents();
     const eventListElement = this._daysList.getElement();
     this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinations, offers);
     this._showedEventControllers = this._showedEventControllers.concat(this._creatingEvent);
@@ -145,7 +147,7 @@ export default class DaysListController {
         const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange, destinstions, offers);
         this._showedEventControllers = this._showedEventControllers.concat(newEvents);
       });
-
+     
       render(dayEventList.getElement(), eventList);
       render(daysListElement, dayEventList);
       pointCount++;
@@ -165,6 +167,7 @@ export default class DaysListController {
     const offers = this._offersModel.getOffers();
     this._creatingEvent = null;
     const events = this._eventsModel.getEvents();
+
     if (type === SortType.DEFAULT) {
       this._daysList.getElement().innerHTML = ``;
       this._getDefaultDaylist(events);

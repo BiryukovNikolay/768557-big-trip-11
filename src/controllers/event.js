@@ -42,11 +42,12 @@ export default class EventController {
   }
 
   render(event, mode) {
+    
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
     this._event = event;
-
+    console.log(this._mode);
     this._eventComponent = new TripEventComponent(this._event);
     this._eventComponent.setRollupHandler(this._onEditButton);
 
@@ -136,13 +137,14 @@ export default class EventController {
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
+        console.log(this._mode);
         this._onDataChange(EmptyEvent, null);
         remove(this._eventEditComponent);
         this._mode = Mode.DEFAULT;
       }
+      
       this._eventEditComponent.reset();
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
