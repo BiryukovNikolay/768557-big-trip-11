@@ -225,8 +225,6 @@ export default class DaysListController {
         this._updateEvents();
         this._creatingEvent = null;
       } else {
-        console.log(newData.dateEnd);
-        
         this._api.createEvent(newData)
            .then((eventsModel) => {
              this._eventsModel.addEvent(eventsModel);
@@ -253,7 +251,8 @@ export default class DaysListController {
            const isSuccess = this._eventsModel.updateEvents(oldData.id, eventModel);
            if (isSuccess) {
              eventController.render(eventModel, EventControllerMode.DEFAULT);
-             if (oldData.dateStart !== newData.dateStart || oldData.dateEnd !== newData.dateEnd) {
+
+             if (oldData.dateStart === newData.dateStart || oldData.dateEnd === newData.dateEnd) {
                this._resetSort();
                this._updateEvents();
              }
