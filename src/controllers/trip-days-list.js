@@ -115,9 +115,16 @@ export default class DaysListController {
     this._showedEventControllers.forEach((it) => {
       it.setDefaultView();
     });
+
     this._resetSort();
     this._updateEvents();
+
+    if (this._eventsModel.getEvents().length === 0) {
+      remove(this._noEventsComponent);
+      render(this._container, this._daysList);
+    }
     const eventListElement = this._daysList.getElement();
+    console.log(eventListElement);
     this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinations, offers);
     this._showedEventControllers = this._showedEventControllers.concat(this._creatingEvent);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
@@ -147,7 +154,6 @@ export default class DaysListController {
         const newEvents = renderEvent(eventList.getElement(), it, this._onDataChange, this._onViewChange, destinstions, offers);
         this._showedEventControllers = this._showedEventControllers.concat(newEvents);
       });
-
       render(dayEventList.getElement(), eventList);
       render(daysListElement, dayEventList);
       pointCount++;
