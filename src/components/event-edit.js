@@ -336,7 +336,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   save() {
-   
+
     this._event.dateStart = this._dateStart;
     this._event.dateEnd = this._dateEnd;
     this._event.favorite = this._favorite;
@@ -349,11 +349,13 @@ export default class EventEdit extends AbstractSmartComponent {
 
 
   getData() {
+    console.log(this._favorite);
+    
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
     const parsedData = parseFormData(formData);
     parsedData.destination = Object.assign({description: this._description, pictures: this._photo}, parsedData.destination);
-    return new EventModel(Object.assign({id: this._event.id, offers: this._eventOffers}, parsedData));
+    return new EventModel(Object.assign({"id": this._event.id, "offers": this._eventOffers, "is_favorite": this._favorite}, parsedData));
   }
 
   setDeleteButtonClickHandler(handler) {
@@ -427,6 +429,7 @@ export default class EventEdit extends AbstractSmartComponent {
       favoriteBlock.addEventListener(`click`, (evt) => {
         evt.preventDefault();
         this._favorite = !this._favorite;
+        this._event.favorite = this._favorite;
         this.rerender();
       });
     }

@@ -185,13 +185,14 @@ export default class EventController {
       });
 
       const data = this._eventEditComponent.getData();
+      console.log(data);
+      
       this._onDataChange(this._event, data);
       this._eventEditComponent.setData({
         saveButtonText: `Saving...`,
         disableform: `disabled`,
       });
       document.removeEventListener(`keydown`, this._onEscKeyDown);
-      this.destroy();
     } else {
       destinationsList.setCustomValidity(`Сhoose an option from the list`);
     }
