@@ -1,12 +1,12 @@
-import EventListComponent from "../components/trip-events-list.js";
+import EventListComponent from "../components/events-list.js";
 import TripDayComponent from "../components/trip-day.js";
-import DaysListComponent from "../components/trip-days-list.js";
+import DaysListComponent from "../components/days-list.js";
 import SortComponent from "../components/sort.js";
 import NoEventsComponent from "../components/no-events.js";
 import {render, remove} from "../utils/render.js";
 import {formatDayMonth, duration, formatDayMonthYear} from "../utils/date.js";
 import {SortType} from "../components/sort.js";
-import EventController, {Mode as EventControllerMode, EmptyEvent} from "./event.js";
+import EventController, {Mode as EventControllerMode, EmptyEvent} from "./event-controller.js";
 
 const renderEvent = (eventListElement, event, onDataChange, onViewChange, destinations, offers) => {
 

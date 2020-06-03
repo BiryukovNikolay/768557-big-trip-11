@@ -9,9 +9,9 @@ import BtnNewEventComponent from "./components/btn-new-event.js";
 import ListLoadComponent from "./components/list-load.js";
 import TripPageComponent from "./components/trip-page.js";
 import StatisticsComponent from "./components/statistics.js";
-import DaysListController from "./controllers/trip-days-list.js";
-import RouteAndPriceController from "./controllers/route-and-price.js";
-import FilterController from "./controllers/filters.js";
+import DaysListController from "./controllers/days-list-controller.js";
+import RouteAndPriceController from "./controllers/route-and-price-controller.js";
+import FilterController from "./controllers/filters-controller.js";
 import {render, remove} from "./utils/render.js";
 
 const AUTHORIZATION = `Basic t54e670er889jg7r`;
