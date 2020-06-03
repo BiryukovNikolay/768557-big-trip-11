@@ -62,7 +62,7 @@ export default class EventController {
 
       this._onDataChange(event, null);
     });
-
+        console.log(event, mode);
     switch (mode) {
       case Mode.DEFAULT:
         if (oldEventComponent && oldEventEditComponent) {
@@ -78,6 +78,7 @@ export default class EventController {
           remove(oldEventComponent);
           remove(oldEventEditComponent);
         }
+
         document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._container, this._eventEditComponent, RenderPosition.AFTERBEGIN);
         break;
@@ -191,9 +192,10 @@ export default class EventController {
         disableform: `disabled`,
       });
       document.removeEventListener(`keydown`, this._onEscKeyDown);
-      this.destroy();
     } else {
       destinationsList.setCustomValidity(`Сhoose an option from the list`);
     }
+    this._event.destination = ``;
+    this._event.eventType = `bus`;
   }
 }
