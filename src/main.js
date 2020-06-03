@@ -88,16 +88,6 @@ Promise.all([offersList, destinationList]).then(() => {
 });
 
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`./sw.js`)
-  .then(() => {
-
-  }).catch(() => {
-
-  });
-});
-
-
 window.addEventListener(`online`, () => {
   document.title = document.title.replace(` [offline]`, ``);
 

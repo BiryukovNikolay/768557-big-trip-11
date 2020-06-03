@@ -181,7 +181,7 @@ export default class EventController {
 
       const inputs = this._eventEditComponent.getElement().querySelectorAll(`.event__input`);
       inputs.forEach((it) => {
-        it.setAttribute(`disabled`, true);
+        it.setAttribute(`readonly`, true);
       });
 
       const data = this._eventEditComponent.getData();

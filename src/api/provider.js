@@ -9,6 +9,7 @@ const isOnline = () => {
 };
 
 const getSyncedEvents = (items) => {
+
   return items.filter(({success}) => success)
     .map(({payload}) => payload.event);
 };

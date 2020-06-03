@@ -219,6 +219,9 @@ export default class DaysListController {
       return oldData.id === it.getEvent().id;
     });
 
+    console.log(oldData, newData);
+    
+
     if (oldData === EmptyEvent) {
       if (newData === null) {
         this._creatingEvent.destroy();
