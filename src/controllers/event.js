@@ -42,12 +42,11 @@ export default class EventController {
   }
 
   render(event, mode) {
-    
+
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
     this._event = event;
-    console.log(this._mode);
     this._eventComponent = new TripEventComponent(this._event);
     this._eventComponent.setRollupHandler(this._onEditButton);
 
@@ -133,18 +132,19 @@ export default class EventController {
     }
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
-        console.log(this._mode);
+
         this._onDataChange(EmptyEvent, null);
         remove(this._eventEditComponent);
         this._mode = Mode.DEFAULT;
       }
-      
+
       this._eventEditComponent.reset();
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
@@ -178,6 +178,12 @@ export default class EventController {
     const destinationsList = this._eventEditComponent.getElement().querySelector(`#event-destination-1`);
     if (this._event.destination !== ``) {
       this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = ``;
+
+      const inputs = this._eventEditComponent.getElement().querySelectorAll(`.event__input`);
+      inputs.forEach((it) => {
+        it.setAttribute(`disabled`, true);
+      });
+
       const data = this._eventEditComponent.getData();
       this._onDataChange(this._event, data);
       this._eventEditComponent.setData({
@@ -185,6 +191,7 @@ export default class EventController {
         disableform: `disabled`,
       });
       document.removeEventListener(`keydown`, this._onEscKeyDown);
+      this.destroy();
     } else {
       destinationsList.setCustomValidity(`Сhoose an option from the list`);
     }
