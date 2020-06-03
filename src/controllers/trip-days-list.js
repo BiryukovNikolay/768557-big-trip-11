@@ -124,7 +124,7 @@ export default class DaysListController {
       render(this._container, this._daysList);
     }
     const eventListElement = this._daysList.getElement();
-    console.log(eventListElement);
+    
     this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinations, offers);
     this._showedEventControllers = this._showedEventControllers.concat(this._creatingEvent);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
@@ -138,6 +138,10 @@ export default class DaysListController {
   }
 
   _getDefaultDaylist(eventsList) {
+    if (this._noEventsComponent) {
+      remove(this._noEventsComponent);
+      render(this._container, this._daysList);
+    }
     const daysListElement = this._container.querySelector(`.trip-days`);
     const dayEventsList = getDayEventsList(eventsList.sort((a, b) => {
       return Date.parse(a.dateStart) - Date.parse(b.dateStart);
