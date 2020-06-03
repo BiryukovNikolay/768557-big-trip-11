@@ -8,10 +8,10 @@ import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/material_blue.css";
 
 const DefaultData = {
-  deleteButtonText: `Delete`,
-  saveButtonText: `Save`,
-  disableform: ``,
-  readonly: ``,
+  DELETE_BUTTON_TEXT: `Delete`,
+  SAVE_BUTTON_TEXT: `Save`,
+  DISABLE_FORM: ``,
+  READ_ONLY: ``,
 };
 
 const availableOffers = (offerNames, eventType) => {
@@ -24,7 +24,15 @@ const availableOffers = (offerNames, eventType) => {
   }
 };
 
-const createOfferMarkup = (offers, checkedOffers) => {
+const isDisabled = (readonly) => {
+  if (readonly !== ``) {
+    return `disabled`;
+  } else {
+    return ``;
+  }
+};
+
+const createOfferMarkup = (readonly, offers, checkedOffers) => {
   return offers.map((it) => {
     const {price, title} = it;
     const titleForAttribute = title.toLowerCase().replace(/ /g, `-`);
@@ -32,9 +40,11 @@ const createOfferMarkup = (offers, checkedOffers) => {
       return that.title === it.title;
     });
 
+    const disabled = isDisabled(readonly);
+
     return (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${titleForAttribute}-1" type="checkbox" aria-label="${title}" name="event-offer-${titleForAttribute}" ${checkedOffer ? `checked` : ``}>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${titleForAttribute}-1" ${disabled} type="checkbox" aria-label="${title}"  name="event-offer-${titleForAttribute}" ${checkedOffer ? `checked` : ``}>
         <label class="event__offer-label" for="event-offer-${titleForAttribute}-1">
         <span class="event__offer-title">${title}</span>
         &plus;
@@ -45,13 +55,13 @@ const createOfferMarkup = (offers, checkedOffers) => {
   }).join(`\n`);
 };
 
-const createOfferBlock = (offers, checkedOffers) => {
+const createOfferBlock = (readonly, offers, checkedOffers) => {
   if (offers.length !== 0) {
     return (
       `<section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${createOfferMarkup(offers, checkedOffers)}
+          ${createOfferMarkup(readonly, offers, checkedOffers)}
         </div>
       </section>`
     );
@@ -78,14 +88,14 @@ const createPhotoMarkup = (photos) => {
   );
 };
 
-const createSectionEventDetailsMarkup = (offers, description, photo, checkedOffers) => {
+const createSectionEventDetailsMarkup = (readonly, offers, description, photo, checkedOffers) => {
   const isDescription = description ? `${createDescriptionMarkup(description)}` : ``;
   const isPhoto = photo ? `${createPhotoMarkup(photo)}` : ``;
 
   if (offers.length !== 0 || description || photo) {
     return (
       `<section class="event__details">
-          ${createOfferBlock(offers, checkedOffers)}
+          ${createOfferBlock(readonly, offers, checkedOffers)}
           <section class="event__section  event__section--destination">
           ${isDescription}
           ${isPhoto}
@@ -179,18 +189,17 @@ const createEventEditTemplate = (event, options = {}) => {
   const types = getTypes(offers);
   const descriptionType = description ? description : ``;
   const typeIconName = `${eventType.toLowerCase()}.png`;
-  const eventDetails = createSectionEventDetailsMarkup(availableTypeOffers, descriptionType, photo, checkedOffers);
+  const readonly = externalData.readonly;
+  const eventDetails = createSectionEventDetailsMarkup(readonly, availableTypeOffers, descriptionType, photo, checkedOffers);
   const dayStart = formatDate(dateStart);
   const timeStart = formatTime(dateStart);
   const dayEnd = formatDate(dateEnd);
   const timeEnd = formatTime(dateEnd);
   const isNewEvent = newEvent ? `` : `${createEditoMarkup(favorite)}`;
-  const deleteButtonText = externalData.deleteButtonText;
-  const saveButtonText = externalData.saveButtonText;
-  const disableForm = externalData.disableform;
-  const readonly = externalData.readonly;
+  const deleteButtonText = externalData.DELETE_BUTTON_TEXT;
+  const saveButtonText = externalData.SAVE_BUTTON_TEXT;
+  const disableForm = externalData.DISABLE_FORM;
   const pretext = isActivities(eventType) ? `in` : `to`;
-
   const isDeleteBtn = newEvent ? `Cancel` : deleteButtonText;
   return (
     `<li class="trip-events__item trip-form">
@@ -222,6 +231,7 @@ const createEventEditTemplate = (event, options = {}) => {
               </div>
 
               <div class="event__field-group  event__field-group--time">
+          
                 <label class="visually-hidden" for="event-start-time-1">
                   From
                 </label>
@@ -231,6 +241,7 @@ const createEventEditTemplate = (event, options = {}) => {
                   To
                 </label>
                 <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayEnd} ${timeEnd}" ${readonly}>
+       
               </div>
 
               <div class="event__field-group  event__field-group--price">

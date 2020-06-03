@@ -60,9 +60,9 @@ export default class EventController {
         this._event.dateEnd = new Date();
       }
       this._eventEditComponent.setData({
-        deleteButtonText: `Deleting...`,
-        disableform: `disabled`,
-        readonly: `readonly`,
+        DELETE_BUTTON_TEXT: `Deleting...`,
+        DISABLE_FORM: `disabled`,
+        READ_ONLY: `readonly`,
       });
 
       this._onDataChange(event, null);
@@ -116,10 +116,10 @@ export default class EventController {
       this._eventComponent.getElement().style.animation = ``;
 
       this._eventEditComponent.setData({
-        deleteButtonText: `Delete`,
-        saveButtonText: `Save`,
-        disableform: ``,
-        readonly: ``,
+        DELETE_BUTTON_TEXT: `Delete`,
+        SAVE_BUTTON_TEXT: `Save`,
+        DISABLE_FORM: ``,
+        READ_ONLY: ``,
       });
 
 
@@ -193,9 +193,9 @@ export default class EventController {
       const data = this._eventEditComponent.getData();
       this._onDataChange(this._event, data);
       this._eventEditComponent.setData({
-        saveButtonText: `Saving...`,
-        disableform: `disabled`,
-        readonly: `readonly`
+        SAVE_BUTTON_TEXT: `Saving...`,
+        DISABLE_FORM: `disabled`,
+        READ_ONLY: `readonly`
       });
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     } else {
