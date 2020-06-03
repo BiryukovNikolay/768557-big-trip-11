@@ -175,6 +175,7 @@ export default class EventController {
 
   _onEditFormSubmit(evt) {
     evt.preventDefault();
+    debugger
     this._eventEditComponent.save();
     const destinationsList = this._eventEditComponent.getElement().querySelector(`#event-destination-1`);
     if (this._event.destination !== ``) {
@@ -186,6 +187,8 @@ export default class EventController {
       });
 
       const data = this._eventEditComponent.getData();
+      console.log(data);
+      
       this._onDataChange(this._event, data);
       this._eventEditComponent.setData({
         saveButtonText: `Saving...`,
@@ -197,5 +200,7 @@ export default class EventController {
     }
     this._event.destination = ``;
     this._event.eventType = `bus`;
+    this._event.dateStart = new Date();
+    this._event.dateEnd = new Date();
   }
 }

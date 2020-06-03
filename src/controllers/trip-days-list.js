@@ -225,6 +225,8 @@ export default class DaysListController {
         this._updateEvents();
         this._creatingEvent = null;
       } else {
+        console.log(newData.dateEnd);
+        
         this._api.createEvent(newData)
            .then((eventsModel) => {
              this._eventsModel.addEvent(eventsModel);
