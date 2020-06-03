@@ -6,8 +6,6 @@ const getParametr = (obj, key) => {
 
 export default class Event {
   constructor(data) {
-    console.log(data);
-    
     this.id = data[`id`];
     this.description = getParametr(data[`destination`], `description`);
     this.destination = getParametr(data[`destination`], `name`);

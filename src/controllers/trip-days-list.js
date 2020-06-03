@@ -219,9 +219,6 @@ export default class DaysListController {
       return oldData.id === it.getEvent().id;
     });
 
-    console.log(oldData, newData);
-    
-
     if (oldData === EmptyEvent) {
       if (newData === null) {
         this._creatingEvent.destroy();
@@ -255,7 +252,8 @@ export default class DaysListController {
            const isSuccess = this._eventsModel.updateEvents(oldData.id, eventModel);
            if (isSuccess) {
              eventController.render(eventModel, EventControllerMode.DEFAULT);
-             if (oldData.dateStart !== newData.dateStart || oldData.dateEnd !== newData.dateEnd) {
+
+             if (oldData.dateStart === newData.dateStart || oldData.dateEnd === newData.dateEnd) {
                this._resetSort();
                this._updateEvents();
              }

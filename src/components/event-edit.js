@@ -256,8 +256,6 @@ const parseFormData = (formData) => {
     "type": formData.get(`event-type`),
     "destination": {name: formData.get(`event-destination`)},
     "base_price": +formData.get(`event-price`),
-    "date_from": formatDateIso(formData.get(`event-start-time`)),
-    "date_to": formatDateIso(formData.get(`event-end-time`)),
   };
 };
 
@@ -336,9 +334,6 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   save() {
-
-    this._event.dateStart = this._dateStart;
-    this._event.dateEnd = this._dateEnd;
     this._event.favorite = this._favorite;
     this._event.eventType = this._eventType;
     this._event.destination = this._eventDestination;
@@ -349,13 +344,11 @@ export default class EventEdit extends AbstractSmartComponent {
 
 
   getData() {
-    console.log(this._favorite);
-    
     const form = this.getElement().querySelector(`.event--edit`);
     const formData = new FormData(form);
     const parsedData = parseFormData(formData);
     parsedData.destination = Object.assign({description: this._description, pictures: this._photo}, parsedData.destination);
-    return new EventModel(Object.assign({"id": this._event.id, "offers": this._eventOffers, "is_favorite": this._favorite}, parsedData));
+    return new EventModel(Object.assign({"date_to": this._event.dateEnd, "date_from": this._event.dateStart, "id": this._event.id, "offers": this._eventOffers, "is_favorite": this._favorite}, parsedData));
   }
 
   setDeleteButtonClickHandler(handler) {
@@ -403,13 +396,13 @@ export default class EventEdit extends AbstractSmartComponent {
 
     const dateElements = this.getElement().querySelectorAll(`.event__input--time`);
     dateElements[0].addEventListener(`change`, () => {
-      this._dateStart = this._flatpickrStart.latestSelectedDateObj;
+      this._event.dateStart = formatDateIso(this._flatpickrStart.latestSelectedDateObj);
       this._flatpickrEnd.destroy();
       this._flatpickrEnd = getFLetpickrEnd();
     });
 
     dateElements[1].addEventListener(`change`, () => {
-      this._dateEnd = this._flatpickrEnd.latestSelectedDateObj;
+      this._event.dateEnd = formatDateIso(this._flatpickrEnd.latestSelectedDateObj);
     });
 
     this._flatpickrStart = flatpickr(dateElements[0], {

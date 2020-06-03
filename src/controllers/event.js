@@ -185,8 +185,6 @@ export default class EventController {
       });
 
       const data = this._eventEditComponent.getData();
-      console.log(data);
-      
       this._onDataChange(this._event, data);
       this._eventEditComponent.setData({
         saveButtonText: `Saving...`,
