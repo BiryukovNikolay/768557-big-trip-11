@@ -325,8 +325,9 @@ export default class EventEdit extends AbstractSmartComponent {
 
   reset() {
     this._price = this._event.priceValue;
-    this._dateStart = this._event.dateStart;
-    this._dateEnd = this._event.dateEnd;
+    this._event.dateStart = this._dateStart;
+    this._event.dateEnd = this._dateEnd;
+
     this._photo = this._event.photo;
     this._eventDestination = this._event.destination;
     this._description = this._event.description;
@@ -388,6 +389,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
     const getFLetpickrEnd = () => {
       return flatpickr(dateElements[1], {
+        enableTime: true,
         altInput: true,
         allowInput: true,
         altFormat: `Y/m/d H:i`,
@@ -409,6 +411,7 @@ export default class EventEdit extends AbstractSmartComponent {
     });
 
     this._flatpickrStart = flatpickr(dateElements[0], {
+      enableTime: true,
       altInput: true,
       allowInput: true,
       altFormat: `Y/m/d H:i`,

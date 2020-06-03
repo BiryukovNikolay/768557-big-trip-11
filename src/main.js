@@ -14,7 +14,7 @@ import RouteAndPriceController from "./controllers/header.js";
 import FilterController from "./controllers/filters.js";
 import {render, remove} from "./utils/render.js";
 
-const AUTHORIZATION = `Basic t54e670er459jg7r`;
+const AUTHORIZATION = `Basic t54e670er889jg7r`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;

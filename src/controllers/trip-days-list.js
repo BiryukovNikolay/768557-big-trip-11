@@ -252,8 +252,8 @@ export default class DaysListController {
            if (isSuccess) {
              eventController.render(eventModel, EventControllerMode.DEFAULT);
 
-             if (oldData.dateStart === newData.dateStart || oldData.dateEnd === newData.dateEnd) {
-               this._resetSort();
+             if (oldData.dateStart !== newData.dateStart || oldData.dateEnd !== newData.dateEnd) {
+
                this._updateEvents();
              }
            }

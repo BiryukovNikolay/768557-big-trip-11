@@ -55,6 +55,10 @@ export default class EventController {
     this._eventEditComponent.setResetHandler(this._onResetButton);
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {
+      if (this._mode === Mode.ADDING) {
+        this._event.dateStart = new Date();
+        this._event.dateEnd = new Date();
+      }
       this._eventEditComponent.setData({
         deleteButtonText: `Deleting...`,
         disableform: `disabled`,
@@ -202,5 +206,6 @@ export default class EventController {
     this._event.dateStart = new Date();
     this._event.dateEnd = new Date();
     this._event.offers = [];
+    this._event.photo = null;
   }
 }
