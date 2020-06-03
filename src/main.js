@@ -43,7 +43,10 @@ filterController.render();
 render(tripMainElement, btnNewEvent);
 render(bodyContainer, tripPageElement);
 headerController.render();
-btnNewEvent.setClickHandler(daysListController.onCreateEvents);
+btnNewEvent.setClickHandler(() => {
+  filterController.defaultFitler();
+  daysListController.onCreateEvents();
+});
 
 
 siteMenuComponent.setOnChange((menuItem) => {

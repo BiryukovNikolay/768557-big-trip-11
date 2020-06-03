@@ -1,5 +1,4 @@
-import AbstractComponent from "./abstract-component.js";
-
+import AbstractSmartComponent from "./abstract-smart-component.js";
 const FILTER_ID_PREFIX = `filter-`;
 
 const getFilterNameById = (id) => {
@@ -7,6 +6,8 @@ const getFilterNameById = (id) => {
 };
 
 const createFilterMarkup = ({name, checked}) => {
+  console.log(name, checked);
+  
   return (
     `<div class="trip-filters__filter">
        <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${name}" ${checked ? `checked` : ``}>
@@ -24,21 +25,31 @@ const createFilterTemplate = (filters) => {
   );
 };
 
-export default class Filter extends AbstractComponent {
+export default class Filter extends AbstractSmartComponent {
   constructor(filters) {
     super();
 
     this._filters = filters;
+    this._changeFilterHandler = null;
   }
 
   getTemplate() {
     return createFilterTemplate(this._filters);
   }
 
+  recoveryListeners() {
+    this.setFilterChangeHandler(this._changeFilterHandler);
+  }
+
+  rerender() {
+    super.rerender();
+  }
+
   setFilterChangeHandler(handler) {
     this.getElement().addEventListener(`change`, (evt) => {
       const filterName = getFilterNameById(evt.target.id);
       handler(filterName);
+      this._changeFilterHandler = handler;
     });
   }
 }

@@ -116,8 +116,7 @@ export default class DaysListController {
       it.setDefaultView();
     });
 
-    this._resetSort();
-    this._updateEvents();
+    this._onFilterChange();
 
     if (this._eventsModel.getEvents().length === 0) {
       remove(this._noEventsComponent);
@@ -218,9 +217,6 @@ export default class DaysListController {
     const eventController = this._showedEventControllers.find((it) => {
       return oldData.id === it.getEvent().id;
     });
-
-    console.log(oldData, newData);
-    
 
     if (oldData === EmptyEvent) {
       if (newData === null) {

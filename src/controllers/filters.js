@@ -1,6 +1,6 @@
 import FilterComponent from "../components/filter.js";
 import {FilterType} from "../const.js";
-import {render, replace} from "../utils/render.js";
+import {render, replace, remove} from "../utils/render.js";
 
 export default class FilterController {
   constructor(container, eventsModel) {
@@ -34,6 +34,17 @@ export default class FilterController {
     } else {
       render(container, this._filterComponent);
     }
+  }
+
+  defaultFitler() {
+    this._activeFilterType = FilterType.EVERYTHING;
+    this._onFilterChange();
+    this._filterComponent.rerender();
+  }
+
+  destroy() {
+    remove(this._filterComponent);
+    this.render();
   }
 
   _onFilterChange(filterType) {
