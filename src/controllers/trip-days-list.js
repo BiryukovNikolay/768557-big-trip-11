@@ -124,7 +124,6 @@ export default class DaysListController {
       render(this._container, this._daysList);
     }
     const eventListElement = this._daysList.getElement();
-    
     this._creatingEvent = new EventController(eventListElement, this._onDataChange, this._onViewChange, destinations, offers);
     this._showedEventControllers = this._showedEventControllers.concat(this._creatingEvent);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);

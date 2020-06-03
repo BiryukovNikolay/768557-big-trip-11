@@ -128,9 +128,7 @@ export default class Provider {
       return this._api.sync(storeEvents)
         .then((response) => {
           const createdEvents = getSyncedEvents(response.created);
-          const updatedEvents = getSyncedEvents(response.updated);
-
-          const items = createStoreStructure([...createdEvents, ...updatedEvents]);
+          const items = createStoreStructure([...createdEvents]);
 
           this._store.setItems(items);
         });
