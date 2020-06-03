@@ -25,7 +25,8 @@ const availableOffers = (offerNames, eventType) => {
 };
 
 const isDisabled = (readonly) => {
-  if (readonly !== ``) {
+
+  if (readonly) {
     return `disabled`;
   } else {
     return ``;
@@ -40,7 +41,9 @@ const createOfferMarkup = (readonly, offers, checkedOffers) => {
       return that.title === it.title;
     });
 
+
     const disabled = isDisabled(readonly);
+
 
     return (
       `<div class="event__offer-selector">
@@ -56,6 +59,7 @@ const createOfferMarkup = (readonly, offers, checkedOffers) => {
 };
 
 const createOfferBlock = (readonly, offers, checkedOffers) => {
+
   if (offers.length !== 0) {
     return (
       `<section class="event__section  event__section--offers">
@@ -91,7 +95,6 @@ const createPhotoMarkup = (photos) => {
 const createSectionEventDetailsMarkup = (readonly, offers, description, photo, checkedOffers) => {
   const isDescription = description ? `${createDescriptionMarkup(description)}` : ``;
   const isPhoto = photo ? `${createPhotoMarkup(photo)}` : ``;
-
   if (offers.length !== 0 || description || photo) {
     return (
       `<section class="event__details">
@@ -189,7 +192,7 @@ const createEventEditTemplate = (event, options = {}) => {
   const types = getTypes(offers);
   const descriptionType = description ? description : ``;
   const typeIconName = `${eventType.toLowerCase()}.png`;
-  const readonly = externalData.readonly;
+  const readonly = externalData.READ_ONLY;
   const eventDetails = createSectionEventDetailsMarkup(readonly, availableTypeOffers, descriptionType, photo, checkedOffers);
   const dayStart = formatDate(dateStart);
   const timeStart = formatTime(dateStart);

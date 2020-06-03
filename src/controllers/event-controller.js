@@ -185,9 +185,10 @@ export default class EventController {
     if (this._event.destination !== ``) {
       this._eventEditComponent.getElement().querySelector(`.event--edit`).style.border = ``;
 
-      const inputs = this._eventEditComponent.getElement().querySelectorAll(`.event__input`);
+      const inputs = this._eventEditComponent.getElement().querySelectorAll(`input`);
+
       inputs.forEach((it) => {
-        it.setAttribute(`readonly`, true);
+        return it.setAttribute(`disabled`, `disabled`);
       });
 
       const data = this._eventEditComponent.getData();
