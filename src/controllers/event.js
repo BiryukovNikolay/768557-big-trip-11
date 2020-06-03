@@ -58,6 +58,7 @@ export default class EventController {
       this._eventEditComponent.setData({
         deleteButtonText: `Deleting...`,
         disableform: `disabled`,
+        readonly: `readonly`,
       });
 
       this._onDataChange(event, null);
@@ -114,6 +115,7 @@ export default class EventController {
         deleteButtonText: `Delete`,
         saveButtonText: `Save`,
         disableform: ``,
+        readonly: ``,
       });
 
 
@@ -189,6 +191,7 @@ export default class EventController {
       this._eventEditComponent.setData({
         saveButtonText: `Saving...`,
         disableform: `disabled`,
+        readonly: `readonly`
       });
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     } else {

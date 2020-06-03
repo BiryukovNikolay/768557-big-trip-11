@@ -11,6 +11,7 @@ const DefaultData = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
   disableform: ``,
+  readonly: ``,
 };
 
 const availableOffers = (offerNames, eventType) => {
@@ -187,6 +188,7 @@ const createEventEditTemplate = (event, options = {}) => {
   const deleteButtonText = externalData.deleteButtonText;
   const saveButtonText = externalData.saveButtonText;
   const disableForm = externalData.disableform;
+  const readonly = externalData.readonly;
   const pretext = isActivities(eventType) ? `in` : `to`;
 
   const isDeleteBtn = newEvent ? `Cancel` : deleteButtonText;
@@ -199,7 +201,7 @@ const createEventEditTemplate = (event, options = {}) => {
                   <span class="visually-hidden">Choose event type</span>
                   <img class="event__type-icon" width="17" height="17" src="img/icons/${typeIconName}" alt="Event type icon">
                 </label>
-                <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+                <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${readonly}>
 
                 <div class="event__type-list">
                   <fieldset class="event__type-group">
@@ -213,7 +215,7 @@ const createEventEditTemplate = (event, options = {}) => {
                 <label class="event__label  event__type-output" for="event-destination-1">
                   ${eventType} ${pretext}
                 </label>
-                <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+                <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1" ${readonly}>
                 <datalist id="destination-list-1">
                 ${createDestinationsMarkup(destinations)}
                 </datalist>
@@ -223,12 +225,12 @@ const createEventEditTemplate = (event, options = {}) => {
                 <label class="visually-hidden" for="event-start-time-1">
                   From
                 </label>
-                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayStart} ${timeStart}">
+                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayStart} ${timeStart}" ${readonly}>
                 &mdash;
                 <label class="visually-hidden" for="event-end-time-1">
                   To
                 </label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayEnd} ${timeEnd}">
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayEnd} ${timeEnd}" ${readonly}>
               </div>
 
               <div class="event__field-group  event__field-group--price">
@@ -236,7 +238,7 @@ const createEventEditTemplate = (event, options = {}) => {
                   <span class="visually-hidden">Price</span>
                   &euro;
                 </label>
-                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" ${readonly}>
               </div>
 
               <button class="event__save-btn  btn  btn--blue" type="submit" ${disableForm}>${saveButtonText}</button>
