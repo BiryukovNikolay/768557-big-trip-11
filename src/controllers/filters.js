@@ -40,6 +40,7 @@ export default class FilterController {
     this._activeFilterType = FilterType.EVERYTHING;
     this._onFilterChange();
     this._filterComponent.rerender();
+    this._filterComponent.setFilterChangeHandler(this._onFilterChange);
   }
 
   destroy() {
