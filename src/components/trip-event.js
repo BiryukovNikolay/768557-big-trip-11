@@ -2,6 +2,8 @@ import {formatTime, formatDuration} from "../utils/date.js";
 import AbstractComponent from "./abstract-component.js";
 import {ACTIVITIES} from "../const.js";
 
+const OFFERSCOUNT = 3;
+
 const createOfferMarkup = (offers) => {
   return offers.map((it) => {
     const {title, price} = it;
@@ -12,7 +14,7 @@ const createOfferMarkup = (offers) => {
           <span class="event__offer-price">${price}</span>
         </li>`;
   })
-  .slice(0, 3)
+  .slice(0, OFFERSCOUNT)
   .join(`\n`);
 };
 

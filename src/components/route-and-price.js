@@ -1,6 +1,6 @@
 import {formatMonthDay, formatMonth, formatDay} from "../utils/date.js";
 import AbstractComponent from "./abstract-smart-component.js";
-
+const TRIPCOUNT = 3;
 const createRouteAndPriceInformationTemplate = (eventsList) => {
 
   const events = eventsList.sort((a, b) => Date.parse(a.dateStart) - Date.parse(b.dateStart));
@@ -25,7 +25,7 @@ const createRouteAndPriceInformationTemplate = (eventsList) => {
     const endMonth = formatMonth(lastDay.dateEnd);
     const endDay = formatDay(lastDay.dateEnd);
 
-    route = `${startLocation} &mdash;${events.length > 3 ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}`;
+    route = `${startLocation} &mdash;${events.length > TRIPCOUNT ? ` ... ` : `${middleLocation}`} &mdash; ${lastLocation}`;
     date = `${startDate}&nbsp;&mdash;&nbsp;${endMonth === startMonth ? `${endDay}` : `${endDate}`}`;
 
     const getTotalPriceOfOffer = (offers) => {

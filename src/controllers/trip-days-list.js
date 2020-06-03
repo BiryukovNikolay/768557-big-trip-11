@@ -2,7 +2,7 @@ import EventListComponent from "../components/trip-events-list.js";
 import TripDayComponent from "../components/trip-day.js";
 import DaysListComponent from "../components/trip-days-list.js";
 import SortComponent from "../components/sort.js";
-import NoEventsComponent from "../components/no-event.js";
+import NoEventsComponent from "../components/no-events.js";
 import {render, remove} from "../utils/render.js";
 import {formatDayMonth, duration, formatDayMonthYear} from "../utils/date.js";
 import {SortType} from "../components/sort.js";

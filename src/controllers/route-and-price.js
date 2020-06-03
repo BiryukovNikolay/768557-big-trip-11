@@ -1,4 +1,4 @@
-import RouteAndPriceComponent from "../components/route-and-price-information.js";
+import RouteAndPriceComponent from "../components/route-and-price.js";
 import {render, replace, RenderPosition} from "../utils/render.js";
 
 

@@ -1,16 +1,16 @@
-import API from "./api/index.js";
+import Index from "./api/index.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
-import EventsModel from "./models/trip-events.js";
+import EventsModel from "./models/events.js";
 import DestinationsModel from "./models/destinations.js";
 import OffersModel from "./models/offers.js";
 import MenuControlComponent, {MenuItem} from "./components/menu-control.js";
 import BtnNewEventComponent from "./components/btn-new-event.js";
-import ListLoadComponent from "./components/list-loading.js";
+import ListLoadComponent from "./components/list-load.js";
 import TripPageComponent from "./components/trip-page.js";
 import StatisticsComponent from "./components/statistics.js";
 import DaysListController from "./controllers/trip-days-list.js";
-import RouteAndPriceController from "./controllers/header.js";
+import RouteAndPriceController from "./controllers/route-and-price.js";
 import FilterController from "./controllers/filters.js";
 import {render, remove} from "./utils/render.js";
 
@@ -20,7 +20,7 @@ const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
-const api = new API(END_POINT, AUTHORIZATION);
+const api = new Index(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 const eventsModel = new EventsModel();

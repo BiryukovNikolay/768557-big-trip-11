@@ -4,6 +4,11 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {TRANSFERS, EVENT_TYPES} from "../const";
 import {duration, formatDurationStat} from "../utils/date.js";
 
+const PRICECOUNT = 6;
+const MONEYHEIGHT = 6;
+const TRANSPORTCOUNT = 4;
+const TRANSPORTHEIGHT = 4;
+
 const findTrasportEvents = (events, typeOfEvents) => {
   return events.filter((it) => {
     return typeOfEvents.some((that) => {
@@ -78,7 +83,7 @@ const renderMoneyChart = (events, moneyCtx) => {
     };
   }).sort((a, b) => {
     return b.totalPrice - a.totalPrice;
-  }).slice(0, 6);
+  }).slice(0, PRICECOUNT);
 
 
   const moneyTitles = pricesOfType.map((it) => {
@@ -89,7 +94,7 @@ const renderMoneyChart = (events, moneyCtx) => {
     return it.totalPrice;
   });
 
-  moneyCtx.height = BAR_HEIGHT * 6;
+  moneyCtx.height = BAR_HEIGHT * MONEYHEIGHT;
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
@@ -160,7 +165,7 @@ const renderMoneyChart = (events, moneyCtx) => {
 const renderTransportChart = (events, transportCtx) => {
   const quantityOfTransport = groupEvent(events, TRANSFERS);
 
-  const labelsName = quantityOfTransport.slice(0, 4).map((it) => {
+  const labelsName = quantityOfTransport.slice(0, TRANSPORTCOUNT).map((it) => {
     if (it.length > 0) {
       return it[0].eventType;
     } else {
@@ -168,11 +173,11 @@ const renderTransportChart = (events, transportCtx) => {
     }
   });
 
-  const transportCounts = quantityOfTransport.slice(0, 4).map((it) => {
+  const transportCounts = quantityOfTransport.slice(0, TRANSPORTCOUNT).map((it) => {
     return it.length;
   });
 
-  transportCtx.height = BAR_HEIGHT * 4;
+  transportCtx.height = BAR_HEIGHT * TRANSPORTHEIGHT;
   return new Chart(transportCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
